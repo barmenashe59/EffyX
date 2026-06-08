@@ -1,0 +1,12 @@
+{
+  "name": "caliber-landing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Caliber — AI career agent for high-tech sales. Marketing landing page + waitlist.",
+  "scripts": {
+    "dev": "npx --yes serve .",
+    "start": "npx --yes serve ."
+  },
+  "keywords": ["landing-page", "waitlist", "sales", "caliber"],
+  "license": "UNLICENSED"
+}

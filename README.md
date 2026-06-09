@@ -2,7 +2,7 @@
 
 **AI career agent for high-tech sales.** Pre-launch landing page + waitlist.
 
-Caliber runs your job search like a sales pipeline — sourcing the right roles, tailoring
+EffyX runs your job search like a sales pipeline — sourcing the right roles, tailoring
 every application, opening doors with hiring managers, and tracking it all on one board.
 
 A single, dependency-free `index.html` (HTML + CSS + vanilla JS). No build step.

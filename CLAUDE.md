@@ -4,9 +4,9 @@ Project context for Claude Code. Read this before making changes.
 
 ## What this is
 
-**Caliber** — marketing landing page + waitlist for an AI *career agent* built for
+**EffyX** — marketing landing page + waitlist for an AI *career agent* built for
 high-tech sales professionals (AEs, RVPs, SDR leaders, etc.). The product premise:
-run a job search like a sales pipeline. Caliber sources relevant roles, tailors every
+run a job search like a sales pipeline. EffyX sources relevant roles, tailors every
 application, drafts hiring-manager outreach, and tracks everything as a deal board.
 
 This repo is currently the **pre-launch landing page only** (no product backend yet).

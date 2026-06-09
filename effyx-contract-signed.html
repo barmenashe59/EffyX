@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EffyX — חוזה נחתם</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink-950:#110726;--ink-900:#160A2E;--ink-850:#1C1140;
+  --teal:#06C9BA;--teal-2:#2FD9C6;--violet:#6A34D6;--violet-2:#7C4DE0;--mint:#80DCD9;
+  --cloud:#ECF3F6;--gold:#F2C14E;
+  --grad:linear-gradient(118deg,#06C9BA 0%,#12A6C9 46%,#6A34D6 100%);
+  --disp:"Familjen Grotesk","IBM Plex Sans Hebrew",sans-serif;
+  --sans:"IBM Plex Sans Hebrew",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--ink-950);color:var(--cloud);font-family:var(--sans);
+  display:grid;place-items:center;overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+.stage{
+  position:relative;width:100%;max-width:760px;aspect-ratio:16/10;min-height:460px;
+  border-radius:28px;overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(120% 90% at 22% 12%,rgba(11,215,194,.16),transparent 55%),
+    radial-gradient(120% 110% at 85% 95%,rgba(106,52,214,.30),transparent 60%),
+    linear-gradient(160deg,#170B33,#0d0620);
+  box-shadow:0 40px 120px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;pointer-events:none;z-index:6;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+canvas#cf{position:absolute;inset:0;z-index:5;pointer-events:none}
+
+/* brand mark top-right */
+.brand{position:absolute;top:18px;left:20px;z-index:7;display:flex;align-items:center;gap:8px;opacity:.9}
+.brand svg{height:18px;width:auto}
+.brand b{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:-.01em;color:var(--cloud)}
+
+/* flare + rays behind stack */
+.fx{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:1;pointer-events:none}
+.flare{width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(143,243,224,.55) 0%,rgba(106,52,214,.32) 32%,transparent 62%);
+  opacity:0;transform:scale(.2);filter:blur(2px)}
+.rays{position:absolute;left:50%;top:50%;width:620px;height:620px;transform:translate(-50%,-50%) scale(.4) rotate(0deg);
+  border-radius:50%;opacity:0;mix-blend-mode:screen;
+  background:conic-gradient(from 0deg,transparent 0 8deg,rgba(143,243,224,.22) 9deg 11deg,transparent 12deg 30deg,
+    rgba(124,77,224,.20) 31deg 33deg,transparent 34deg 60deg,rgba(143,243,224,.22) 61deg 63deg,transparent 64deg);
+  -webkit-mask:radial-gradient(circle,transparent 28%,#000 30%,#000 60%,transparent 72%);
+          mask:radial-gradient(circle,transparent 28%,#000 30%,#000 60%,transparent 72%)}
+
+/* the 3D stack */
+.scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-62%);z-index:2;
+  perspective:1200px;perspective-origin:50% 40%}
+.stack{position:relative;width:260px;height:230px;transform:rotateX(8deg);transform-style:preserve-3d;
+  transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.stack.charge{transform:rotateX(8deg) scale(1.02)}
+.stack.open{transform:rotateX(8deg) scale(1.05)}
+
+.layer,.cap,.core{position:absolute;left:50%;transform:translateX(-50%);border-radius:16px}
+.layer{
+  background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(6px);
+  box-shadow:0 14px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:transform .85s cubic-bezier(.2,.8,.25,1),box-shadow .6s,opacity .6s}
+.layer .port{width:18px;height:12px;border-radius:4px;background:rgba(255,255,255,.10);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.l1{width:230px;height:46px;bottom:6px}
+.l2{width:218px;height:44px;bottom:50px}
+.l3{width:206px;height:42px;bottom:92px}
+
+/* glowing core (hidden until burst) */
+.core{width:188px;height:30px;bottom:134px;border-radius:12px;background:var(--grad);opacity:0;
+  transform:translateX(-50%) scaleY(.15);transform-origin:bottom;
+  box-shadow:0 0 26px rgba(6,201,186,.8),0 0 60px rgba(106,52,214,.7),0 8px 30px rgba(106,52,214,.5);
+  transition:transform .5s cubic-bezier(.2,1.4,.3,1),opacity .35s}
+
+/* top cap with the X */
+.cap{width:150px;height:96px;bottom:120px;border-radius:20px;
+  background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(224,230,245,.78));
+  box-shadow:0 18px 40px rgba(10,5,30,.45),inset 0 1px 0 rgba(255,255,255,.9);
+  display:grid;place-items:center;
+  transition:transform .85s cubic-bezier(.2,.8,.25,1),box-shadow .6s}
+.cap svg{width:54px;height:54px}
+
+/* OPEN state: separate layers, lift cap, show core */
+.stack.open .l1{transform:translateX(-50%) translateY(10px)}
+.stack.open .l2{transform:translateX(-50%) translateY(-6px)}
+.stack.open .l3{transform:translateX(-50%) translateY(-30px)}
+.stack.open .core{opacity:1;transform:translateX(-50%) scaleY(1)}
+.stack.open .cap{transform:translateX(-50%) translateY(-78px) rotateX(-6deg);
+  box-shadow:0 30px 60px rgba(10,5,30,.5),0 0 40px rgba(143,243,224,.4),inset 0 1px 0 rgba(255,255,255,.9)}
+.fx.show .flare{animation:flare 1.4s cubic-bezier(.2,.7,.2,1) forwards}
+.fx.show .rays{animation:rays 1.6s ease-out forwards}
+@keyframes flare{0%{opacity:0;transform:scale(.2)}22%{opacity:.95;transform:scale(1.1)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes rays{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(0)}20%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5) rotate(40deg)}}
+
+/* copy */
+.copy{position:absolute;left:0;right:0;bottom:30px;z-index:7;text-align:center;padding:0 24px}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);
+  opacity:0;transform:translateY(10px);transition:.6s .05s}
+.title{font-family:var(--disp);font-weight:700;font-size:clamp(44px,9vw,76px);line-height:1;margin:8px 0 6px;
+  letter-spacing:-.02em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 26px rgba(6,201,186,.45));
+  opacity:0;transform:translateY(18px) scale(.94);transition:transform .7s cubic-bezier(.2,1.3,.3,1),opacity .6s}
+.sub{font-size:16px;color:rgba(236,243,246,.72);opacity:0;transform:translateY(12px);transition:.6s .1s}
+.copy.show .kick{opacity:1;transform:none}
+.copy.show .title{opacity:1;transform:none}
+.copy.show .sub{opacity:1;transform:none}
+
+/* replay btn */
+.replay{position:absolute;bottom:18px;right:20px;z-index:8;font-family:var(--sans);font-weight:600;font-size:13px;
+  color:var(--cloud);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);
+  padding:9px 16px;border-radius:11px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.2s}
+.replay:hover{background:rgba(255,255,255,.13);border-color:var(--teal-2)}
+.replay svg{width:15px;height:15px}
+
+@media (prefers-reduced-motion: reduce){
+  .stack,.layer,.cap,.core,.kick,.title,.sub{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="grain"></div>
+  <canvas id="cf"></canvas>
+
+  <div class="brand">
+    <svg viewBox="0 0 120 120"><g fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round"><path d="M31 31 89 89"/><path d="M31 89 89 31"/></g></svg>
+    <b>EffyX</b>
+  </div>
+
+  <div class="fx" id="fx">
+    <div class="rays"></div>
+    <div class="flare"></div>
+  </div>
+
+  <div class="scene">
+    <div class="stack" id="stack">
+      <div class="layer l1"><span class="port"></span><span class="port"></span><span class="port"></span></div>
+      <div class="layer l2"><span class="port"></span><span class="port"></span><span class="port"></span></div>
+      <div class="layer l3"><span class="port"></span><span class="port"></span></div>
+      <div class="core"></div>
+      <div class="cap">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="xg" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#06C9BA"/><stop offset=".5" stop-color="#12A6C9"/><stop offset="1" stop-color="#6A34D6"/>
+          </linearGradient></defs>
+          <g fill="none" stroke="url(#xg)" stroke-width="22" stroke-linecap="round"><path d="M31 31 89 89"/><path d="M31 89 89 31"/></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="copy" id="copy">
+    <div class="kick">EffyX · מועמד הושם</div>
+    <h1 class="title">חוזה נחתם</h1>
+    <div class="sub">מצאנו התאמה. הגשנו. נחתם.</div>
+  </div>
+
+  <button class="replay" id="replay">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+    הפעל שוב
+  </button>
+</div>
+
+<script>
+const stage=document.getElementById('stage'), stack=document.getElementById('stack'),
+      fx=document.getElementById('fx'), copy=document.getElementById('copy'),
+      cv=document.getElementById('cf'), ctx=cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- confetti ---- */
+let DPR=Math.min(devicePixelRatio||1,2), parts=[], raf=null;
+const COLORS=['#06C9BA','#2FD9C6','#80DCD9','#6A34D6','#7C4DE0','#ECF3F6','#F2C14E'];
+function size(){const r=stage.getBoundingClientRect();cv.width=r.width*DPR;cv.height=r.height*DPR;cv.style.width=r.width+'px';cv.style.height=r.height+'px';}
+addEventListener('resize',size); size();
+
+function burstConfetti(){
+  const r=stage.getBoundingClientRect();
+  const cx=r.width*0.5*DPR, cy=r.height*0.40*DPR;
+  const N=reduce?0:150;
+  for(let i=0;i<N;i++){
+    const a=Math.random()*Math.PI*2;
+    const sp=(2.5+Math.random()*8.5)*DPR;
+    const up=-(2+Math.random()*6)*DPR; // bias upward
+    parts.push({
+      x:cx+(Math.random()-.5)*30*DPR, y:cy+(Math.random()-.5)*20*DPR,
+      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp*0.6+up,
+      g:(0.10+Math.random()*0.08)*DPR, drag:0.992,
+      w:(5+Math.random()*7)*DPR, h:(8+Math.random()*12)*DPR,
+      rot:Math.random()*6.28, vr:(Math.random()-.5)*0.4,
+      col:COLORS[(Math.random()*COLORS.length)|0], life:0, max:120+Math.random()*60,
+      flip:Math.random()*6.28, vf:0.15+Math.random()*0.2
+    });
+  }
+  if(!raf) raf=requestAnimationFrame(loop);
+}
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i]; p.life++;
+    p.vx*=p.drag; p.vy=p.vy*p.drag+p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.flip+=p.vf;
+    const alpha=p.life>p.max-30?Math.max(0,(p.max-p.life)/30):1;
+    if(p.y>cv.height+40||alpha<=0){parts.splice(i,1);continue;}
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+    const sx=Math.cos(p.flip); // fake 3D flutter
+    ctx.scale(sx,1); ctx.globalAlpha=alpha; ctx.fillStyle=p.col;
+    ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore();
+  }
+  if(parts.length) raf=requestAnimationFrame(loop); else {raf=null; ctx.clearRect(0,0,cv.width,cv.height);}
+}
+
+/* ---- orchestration ---- */
+let tids=[];
+function clearT(){tids.forEach(clearTimeout);tids=[];}
+function T(fn,ms){tids.push(setTimeout(fn,ms));}
+
+function celebrate(){
+  clearT();
+  // reset
+  stack.classList.remove('open','charge'); fx.classList.remove('show'); copy.classList.remove('show');
+  parts=[]; if(raf){cancelAnimationFrame(raf);raf=null;} ctx.clearRect(0,0,cv.width,cv.height);
+
+  if(reduce){ copy.classList.add('show'); stack.classList.add('open'); return; }
+
+  // beat 1 — charge
+  T(()=>stack.classList.add('charge'),250);
+  // beat 2 — BURST
+  T(()=>{
+    stack.classList.remove('charge'); stack.classList.add('open');
+    fx.classList.add('show'); burstConfetti();
+  },900);
+  // a second smaller confetti pop
+  T(burstConfetti,1150);
+  // beat 3 — text reveal
+  T(()=>copy.classList.add('show'),1250);
+  // beat 4 — reassemble (text stays)
+  T(()=>stack.classList.remove('open'),3600);
+}
+
+document.getElementById('replay').addEventListener('click',celebrate);
+addEventListener('load',()=>{size();T(celebrate,400);});
+</script>
+</body>
+</html>

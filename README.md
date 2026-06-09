@@ -1,4 +1,4 @@
-# Caliber
+# EffyX
 
 **AI career agent for high-tech sales.** Pre-launch landing page + waitlist.
 

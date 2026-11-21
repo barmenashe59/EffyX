@@ -77,11 +77,48 @@
     return parseJSON(r.text);
   };
 
+
+  // Google's own sign-in button (Google Identity Services). Google then shows
+  // "effyx.netlify.app" to the user instead of the Supabase address.
+  var GOOGLE_CLIENT_ID = "743802344953-nceh1kk27664gi7hdqjnhntba0djejgd.apps.googleusercontent.com";
+  function loadGis() {
+    return new Promise(function (ok, bad) {
+      if (window.google && google.accounts && google.accounts.id) return ok();
+      var t = document.createElement("script");
+      t.src = "https://accounts.google.com/gsi/client"; t.async = true;
+      t.onload = ok; t.onerror = bad; document.head.appendChild(t);
+    });
+  }
+  async function sha256hex(str) {
+    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+  }
+  async function googleButton(el, onError) {
+    await loadGis();
+    var raw = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    var hashed = await sha256hex(raw);
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      nonce: hashed,
+      use_fedcm_for_prompt: true,
+      callback: async function (resp) {
+        var r = await sb.auth.signInWithIdToken({ provider: "google", token: resp.credential, nonce: raw });
+        if (r.error) { if (onError) onError(r.error); return; }
+        location.reload();
+      }
+    });
+    google.accounts.id.renderButton(el, {
+      type: "standard", theme: "outline", size: "large", text: "continue_with",
+      shape: "rectangular", logo_alignment: "center", width: Math.min(el.clientWidth || 356, 400)
+    });
+  }
+
   window.effyx = {
     blockReason: null,
     signIn: function () {
       return sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + "/agent.html" } });
     },
+    googleButton: googleButton,
     signInEmail: function (email) {
       return sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + "/agent.html" } });
     },

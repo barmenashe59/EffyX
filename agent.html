@@ -180,6 +180,12 @@ const STAGES = [
 /* ---------- small helpers ---------- */
 const $ = s => document.querySelector(s);
 const app = $("#app");
+/* Chat boxes: Enter sends, Shift+Enter adds a new line */
+document.addEventListener("keydown",e=>{
+  const t=e.target;
+  if(e.key!=="Enter"||e.shiftKey||e.isComposing||!t||t.id!=="ans") return;
+  e.preventDefault(); const f=t.closest("form"); if(f) f.requestSubmit();
+});
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mark = s => esc(s).replace(/\[([^\]]{1,60})\]/g, '<span class="ph">[$1]</span>');
 const today = () => new Date().toISOString().slice(0,10);
@@ -267,7 +273,7 @@ function onboardProfile(){
     <h1>Tell me about you.</h1>
     <p>This is a conversation, not a form. The more you share about your work, your targets and what's been hard, the better your plan will fit you. Your answers stay private to you and the EffyX pilot team.</p></div>
   <div class="card stack"><div class="chat" id="chat" aria-live="polite"></div>
-  <form class="row" id="say"><textarea id="ans" rows="4" placeholder="Write freely. Details help." style="flex:1 1 300px"></textarea>
+  <form class="row" id="say"><textarea id="ans" rows="4" placeholder="Write freely. Details help. (Enter to send, Shift+Enter for a new line)" style="flex:1 1 300px"></textarea>
   <div class="stack" style="gap:8px"><button class="btn" type="submit">Send</button><button class="btn ghost" id="enough" type="button" ${turns<3?"hidden":""}>That's enough for now</button></div></form>
   <p class="note" id="hint">${turns<3?"A few more answers and I'll have enough to build your plan.":"You can keep going, or move on whenever you're ready."}</p></div>`;
   const chat=$("#chat");
@@ -568,7 +574,7 @@ Stay in character. Keep each message under 70 words. Don't give feedback during 
   let busy=false, ctl=null;
   app.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:16px"><span class="lbl">Practice · ${esc(st[0])}</span><button class="btn ghost" id="back" type="button">Back to stages</button></div>
   <div class="card stack"><div class="chat" id="chat" aria-live="polite"></div>
-  <form class="row" id="say"><textarea id="ans" rows="3" placeholder="Type your answer as you would say it" style="flex:1 1 300px"></textarea>
+  <form class="row" id="say"><textarea id="ans" rows="3" placeholder="Type your answer as you would say it (Enter to send)" style="flex:1 1 300px"></textarea>
   <div class="stack" style="gap:8px"><button class="btn" type="submit">Send</button><button class="btn ghost" id="fb" type="button">End and get feedback</button></div></form>
   <p class="note">Practice in English, the way you would in the real interview.</p></div>`;
   $("#back").onclick=()=>{ if(ctl) ctl.abort(); openWorkspace("stages"); };

@@ -1,748 +1,681 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>EffyX — AI career agent for high-tech sales</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<title>EffyX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
 <style>
-  :root{
-    --bg:#0a0908;
-    --bg-2:#0f0e0c;
-    --surface:#141210;
-    --surface-2:#1b1814;
-    --bone:#F3EEE3;
-    --bone-dim:#CBC4B6;
-    --muted:#8E877B;
-    --faint:rgba(243,238,227,0.09);
-    --faint-2:rgba(243,238,227,0.14);
-    --gold:#D8B26A;
-    --gold-bright:#EAC987;
-    --gold-deep:#B8924A;
-    --green:#9FCB8B;
-    --blue:#8FB7D6;
-    --shadow:0 30px 80px -30px rgba(0,0,0,0.75);
-    --radius:9px;
-    --maxw:1180px;
-    --serif:'Instrument Serif', Georgia, serif;
-    --sans:'Hanken Grotesk', sans-serif;
-    --mono:'JetBrains Mono', monospace;
-  }
+/* Layout: a deep-water terminal. A slow particle orb behind a centered hero, then the hiring path as six instrument stations on a teal surface stack, joined by one glowing line. Single dark theme by design: depth comes from surface shifts, never shadows. */
+:root{
+  --abyss:#012624; --deep:#011d1c; --kelp:#003734; --kelp-2:#03514b; --mist:#edfffe; --white:#ffffff; --silver:#bbc7c6; --slate:#707777;
+  --phosphor:#fde9ff; --teal:#00827c; --aqua:#cbfffc;
+  --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+  --g-bio:linear-gradient(90deg,#00827c 0%,#cbfffc 100%);
+  --g-aurora:linear-gradient(90deg,#cbfffc 0%,#edfffe 26.25%,#fffdfa 47.57%,#fad1ff 88.96%);
+  --f-display:"DM Sans","Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-body:"DM Sans","Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"DM Sans","Inter","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--abyss);color:var(--silver);font-family:var(--f-body);font-size:16px;line-height:1.4;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--abyss)}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--f-mono);font-weight:500;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--silver)}
+h1,h2,h3{font-family:var(--f-display);font-weight:500;color:var(--white);margin:0;text-wrap:balance}
+.thin,.bold{display:block;font-weight:500}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
 
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-  body{
-    font-family:var(--sans);
-    background:var(--bg);
-    color:var(--bone);
-    line-height:1.6;
-    font-weight:400;
-    -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
-    overflow-x:hidden;
-    position:relative;
-    min-height:100vh;
-  }
-  ::selection{ background:var(--gold); color:#1a1206; }
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(1,38,36,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:80px}
+.logo{font-family:var(--f-display);font-weight:500;font-size:20px;color:var(--white);text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.logo b,.logo span span{font-weight:500}
+.logo i{width:10px;height:10px;border-radius:50%;background:var(--g-bio)}
+.links{display:flex;gap:24px}
+.links a{text-decoration:none;color:var(--silver);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.links a:hover{color:var(--white)}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:Arial,system-ui,sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:16px 22px;text-decoration:none;border:0;cursor:pointer;transition:filter .2s,background .2s}
+.btn-cob{background:var(--g-aurora);color:#222222}
+.btn-cob:hover{filter:brightness(1.06)}
+nav .btn-cob{padding:12px 18px}
+.btn-ghost{background:var(--kelp);color:var(--white)}
+.btn-ghost:hover{background:var(--kelp-2)}
 
-  /* atmosphere: warm glow + film grain */
-  .bg-glow{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:
-      radial-gradient(900px 540px at 72% -8%, rgba(216,178,106,0.16), transparent 60%),
-      radial-gradient(1200px 700px at 15% 0%, rgba(216,178,106,0.06), transparent 55%),
-      radial-gradient(800px 800px at 90% 100%, rgba(143,183,214,0.05), transparent 60%);
-  }
-  .grain{
-    position:fixed; inset:-50%; z-index:1; pointer-events:none; opacity:0.05;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode:overlay;
-  }
+/* hero with the particle orb */
+.hero{position:relative;min-height:min(92vh,880px);display:grid;place-items:center;padding-block:80px;text-align:center;overflow:hidden}
+#orb{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.hero::after{content:"";position:absolute;inset:auto 0 0;height:30%;background:linear-gradient(transparent,var(--abyss));pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero h1{font-size:clamp(46px,8vw,96px);line-height:1;letter-spacing:-.04em;margin-top:22px}
+.hero .lede{max-width:600px;margin:28px auto 36px;color:var(--silver);font-size:18px;line-height:1.5}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 
-  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 28px; position:relative; z-index:2; }
+/* section heads */
+section.block{padding-block:120px}
+.head{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:end;margin-bottom:64px}
+.head h2{font-size:clamp(38px,5vw,61px);line-height:1;letter-spacing:-.04em}
+.head p{color:var(--silver);margin:0;max-width:44ch;line-height:1.5}
 
-  .eyebrow{
-    font-family:var(--mono); font-size:0.72rem; letter-spacing:0.22em;
-    text-transform:uppercase; color:var(--gold); font-weight:500;
-    display:inline-flex; align-items:center; gap:0.6em;
-  }
-  .pulse{ width:7px; height:7px; border-radius:50%; background:var(--gold); position:relative; }
-  .pulse::after{ content:''; position:absolute; inset:-4px; border-radius:50%; border:1px solid var(--gold); animation:ring 2.4s ease-out infinite; }
-  @keyframes ring{ 0%{ transform:scale(0.6); opacity:0.9; } 100%{ transform:scale(2.4); opacity:0; } }
+/* hiring path */
+.track{position:relative;display:flex;flex-direction:column;gap:96px}
+.wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0}
+.wire{fill:none;stroke:var(--aqua);stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(203,255,252,.55)) drop-shadow(0 0 14px rgba(0,130,124,.6))}
+.wire-bed{fill:none;stroke:rgba(203,255,252,.16);stroke-width:2;stroke-linecap:round;stroke-dasharray:2 6}
+.node{fill:var(--abyss);stroke:var(--aqua);stroke-width:2}
+.node-dot{fill:var(--aqua)}
+.stage{position:relative;z-index:1;width:min(840px,72%);background:var(--kelp);border-radius:16px;display:grid;grid-template-columns:.8fr 1.2fr;gap:16px;padding:36px 28px 32px 36px;align-items:center;transition:background .3s}
+.stage.right{align-self:flex-end}
+.stage.on{background:#044640}
+.stage-copy{min-width:0}
+.step{color:var(--mist)}
+.stage h3{font-size:36px;line-height:1;letter-spacing:-.02em;margin:14px 0 8px}
+.stage p{margin:0;color:var(--silver);font-size:16px;line-height:1.4}
+.stage .tests{margin-top:18px;color:var(--mist);font-size:15px;line-height:1.45}
+.k{display:block;margin-bottom:4px;font-size:10px;letter-spacing:.15em}
+.k.bad{color:var(--phosphor)}
+.more{all:unset;cursor:pointer;margin-top:20px;display:inline-flex;gap:10px;align-items:center;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--white)}
+.more span{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:6px;background:rgba(3,81,75,.5);font-size:16px;transition:transform .2s}
+.more[aria-expanded="true"] span{transform:rotate(45deg)}
+.more:focus-visible{outline:2px solid var(--aqua);outline-offset:4px}
+.det[hidden]{display:none}
+.det{margin-top:18px;display:grid;gap:14px;padding-top:18px;border-top:1px solid var(--line)}
+.det p{color:var(--mist);font-size:14.5px;line-height:1.5}
+.stage-art{min-width:0}
+.scene{display:block;width:100%;height:auto;max-height:400px}
 
-  /* ---------- NAV ---------- */
-  nav{
-    position:fixed; top:0; left:0; right:0; z-index:50;
-    transition:background .4s ease, border-color .4s ease, backdrop-filter .4s ease;
-    border-bottom:1px solid transparent;
-  }
-  nav.scrolled{
-    background:rgba(10,9,8,0.72);
-    backdrop-filter:blur(14px) saturate(140%);
-    border-bottom:1px solid var(--faint);
-  }
-  .nav-inner{ max-width:var(--maxw); margin:0 auto; padding:18px 28px; display:flex; align-items:center; justify-content:space-between; }
-  .brand{ font-family:var(--serif); font-size:1.55rem; letter-spacing:0.01em; color:var(--bone); display:inline-flex; align-items:baseline; gap:2px; text-decoration:none; }
-  .brand .dot{ color:var(--gold); font-size:0.9em; }
-  .nav-links{ display:flex; align-items:center; gap:34px; }
-  .nav-links a{ font-size:0.86rem; color:var(--bone-dim); text-decoration:none; letter-spacing:0.01em; transition:color .25s; }
-  .nav-links a:hover{ color:var(--bone); }
-  .nav-links a.btn-ghost{ display:inline-block; }
+/* scene paint, on the teal surface stack */
+.scene polygon{stroke:rgba(237,255,254,.55);stroke-width:.5;stroke-linejoin:round}
+.bx .ft{fill:#0B5953}.bx .fl{fill:#04443F}.bx .fr{fill:#02302D}
+.bx.base .ft{fill:#06423E}.bx.base .fl{fill:#033532}.bx.base .fr{fill:#012624}
+.bx.alu .ft{fill:#0E605A}.bx.alu .fl{fill:#074A45}.bx.alu .fr{fill:#033633}
+.bx.dark .ft{fill:#1A2726}.bx.dark .fl{fill:#0F1A19}.bx.dark .fr{fill:#081110}
+.bx.cob .ft{fill:#CBFFFC}.bx.cob .fl{fill:#5CC9C2}.bx.cob .fr{fill:#00827C}
+.bx.desk .ft{fill:#0E605A}.bx.desk .fl{fill:#074A45}.bx.desk .fr{fill:#033633}
+.bx.leg .ft{fill:#2E6B66}.bx.leg .fl{fill:#1D504C}.bx.leg .fr{fill:#123B38}
+.bx.board .ft{fill:#0A524D}.bx.board .fl{fill:#063F3B}.bx.board .fr{fill:#032E2B}
+.bx.paper .ft{fill:#EDFFFE}.bx.paper .fl{fill:#BBC7C6}.bx.paper .fr{fill:#8FA09F}
+.groove{fill:none;stroke:rgba(237,255,254,.18);stroke-width:.45}
+.groove-l{stroke:rgba(237,255,254,.25);stroke-width:.5}
+.screw{fill:#0E605A;stroke:rgba(237,255,254,.6);stroke-width:.35}.slot{stroke:rgba(237,255,254,.6);stroke-width:.3}
+.plate{fill:#011d1c;stroke:rgba(237,255,254,.4);stroke-width:.3}
+.eng{font-family:var(--f-mono);font-size:2.4px;letter-spacing:.1em;fill:#bbc7c6;font-weight:500}
+.screen{fill:#011d1c;stroke:rgba(237,255,254,.35);stroke-width:.35}
+.island{fill:#000}
+.ui-mono{font-family:var(--f-mono);font-size:2.7px;letter-spacing:.1em;fill:#bbc7c6;font-weight:500}
+.ui-mono.acc{fill:#00827C}.ui-mono.tiny{font-size:2.2px}.ui-mono.inv{fill:#012624;font-weight:500}
+.end{text-anchor:end}.mid{text-anchor:middle}
+.ui-txt{font-family:var(--f-body);font-size:3.3px;fill:#edfffe}
+.ui-txt.fix{fill:#cbfffc;font-weight:500}
+.ui-bad{fill:#012624;font-weight:500}
+.ui-h{font-family:var(--f-display);font-weight:500;font-size:5px;fill:#ffffff}
+.ui-q{font-family:var(--f-display);font-weight:500;font-size:4.4px;fill:#012624}
+.ui-ini{font-family:var(--f-display);font-weight:500;font-size:5.4px;fill:#012624;text-anchor:middle}
+.avatar{fill:#cbfffc;stroke:none}
+.bub-them{fill:#03514b}.bub-me{fill:#0B5953}.bub-fix{fill:none;stroke:#cbfffc;stroke-width:.45}
+.flag{fill:#fde9ff;stroke:none}.flag-t{fill:#012624;font-weight:500;font-size:2.4px}
+.cb{fill:none;stroke:#edfffe;stroke-width:.4}
+.tick{fill:none;stroke:#cbfffc;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
+.key{fill:#0B5953;stroke:rgba(237,255,254,.3);stroke-width:.3}.pad{fill:#0B5953;stroke:rgba(237,255,254,.3);stroke-width:.35}
+.lcd{fill:#000}.ui-lcd{font-family:var(--f-mono);font-size:5.6px;font-weight:500;fill:#cbfffc}
+.knob{fill:#2E6B66;stroke:rgba(237,255,254,.5);stroke-width:.3}
+.rule{stroke:#8FA09F;stroke-width:1.1;stroke-linecap:round}.rule-dk{stroke:#012624;stroke-width:.35}
+.dial{fill:#011d1c;stroke:rgba(237,255,254,.6);stroke-width:.45}.tk{stroke:#edfffe;stroke-width:.35}
+.redzone{fill:none;stroke:#fad1ff;stroke-width:1.2}
+.ndl{stroke:#cbfffc;stroke-width:.9;stroke-linecap:round}.hub{fill:#edfffe}
+.bar-dk{fill:#012624}.bar{fill:#8FA09F}
+.shadow{fill:rgba(0,0,0,.28)}
+.lens{fill:rgba(203,255,252,.14);stroke:#edfffe;stroke-width:1.6}.lens-in{fill:none;stroke:#00827c;stroke-width:.5}
+.glint{fill:none;stroke:#fff;stroke-width:1.2;stroke-linecap:round}
+.chk-c{fill:#00827c;stroke:none}.chk-t{fill:none;stroke:#edfffe;stroke-width:.9;stroke-linecap:round;stroke-linejoin:round}
+.sig{fill:none;stroke:#00827c;stroke-width:.7;stroke-linecap:round;stroke-linejoin:round}
 
-  .btn{
-    font-family:var(--sans); font-weight:600; font-size:0.9rem; letter-spacing:0.01em;
-    padding:0.78rem 1.45rem; border-radius:var(--radius); cursor:pointer;
-    border:1px solid transparent; transition:transform .2s ease, box-shadow .25s ease, background .25s ease, color .25s, border-color .25s;
-    text-decoration:none; display:inline-flex; align-items:center; gap:0.5em; white-space:nowrap;
-  }
-  .btn-primary{ background:var(--gold); color:#1a1206; box-shadow:0 6px 22px -8px rgba(216,178,106,0.55); }
-  .btn-primary:hover{ background:var(--gold-bright); transform:translateY(-2px); box-shadow:0 12px 30px -10px rgba(216,178,106,0.7); }
-  .btn-primary:active{ transform:translateY(0); }
-  .btn-ghost{ background:transparent; color:var(--bone); border:1px solid var(--faint-2); }
-  .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
+/* HR filter */
+.filter{display:grid;grid-template-columns:300px 1fr;gap:20px}
+.qs{display:flex;flex-direction:column;gap:8px}
+.qs button{all:unset;cursor:pointer;padding:20px 22px;border-radius:16px;background:var(--deep);font-size:15px;line-height:1.35;color:var(--silver);transition:background .2s,color .2s}
+.qs button small{display:block;font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;color:var(--silver)}
+.qs button[aria-pressed="true"]{background:var(--kelp);color:var(--white)}
+.qs button:focus-visible{outline:2px solid var(--aqua)}
+.screen-card{background:var(--kelp);border-radius:16px;overflow:hidden;min-width:0}
+.screen-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.toggle{display:inline-flex;background:var(--deep);border-radius:6px;padding:3px}
+.toggle button{all:unset;cursor:pointer;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:4px;color:var(--silver)}
+.toggle button[aria-pressed="true"]{background:var(--kelp-2);color:var(--white)}
+.toggle button.after[aria-pressed="true"]{background:var(--g-aurora);color:#222}
+.toggle button:focus-visible{outline:2px solid var(--aqua)}
+.answer{padding:36px;display:grid;gap:24px}
+.answer blockquote{margin:0;font-family:var(--f-display);font-weight:400;color:var(--white);font-size:clamp(22px,2.4vw,28px);line-height:1.3;letter-spacing:-.02em}
+mark.bad{background:var(--phosphor);color:#012624;padding:0 .2em;border-radius:4px}
+mark.good{background:none;color:var(--aqua);text-decoration:underline;text-decoration-color:rgba(203,255,252,.5);text-underline-offset:5px}
+.flags{display:flex;flex-direction:column;gap:12px}
+.flag-row{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;font-size:14.5px;color:var(--silver);padding-top:12px;border-top:1px solid var(--line)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;padding:6px 10px;border-radius:6px;width:max-content;background:var(--phosphor);color:#012624}
+.flag-row.ok .chip{background:rgba(3,81,75,.6);color:var(--aqua)}
+.score{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);font-variant-numeric:tabular-nums}
+.score .bar{flex:1;height:6px;border-radius:3px;background:var(--deep);overflow:hidden;max-width:260px}
+.score .bar i{display:block;height:100%;transition:width .6s cubic-bezier(.2,.8,.2,1),background .3s}
 
-  /* ---------- HERO ---------- */
-  header{ position:relative; padding:160px 0 90px; }
-  .hero-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:64px; align-items:center; }
+/* program */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;counter-reset:s}
+.st{background:var(--kelp);border-radius:16px;padding:28px 24px 32px;min-width:0}
+.st::before{counter-increment:s;content:"0" counter(s);font-size:12px;font-weight:500;letter-spacing:.12em;color:var(--mist)}
+.st h3{font-size:24px;letter-spacing:-.02em;line-height:1.3;margin:16px 0 8px}
+.st p{color:var(--silver);font-size:15px;margin:0;line-height:1.45}
 
-  .hero-side{
-    position:absolute; left:-46px; top:50%; transform:rotate(-90deg) translateX(50%); transform-origin:left center;
-    font-family:var(--mono); font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--muted);
-    white-space:nowrap; display:flex; align-items:center; gap:14px;
-  }
-  .hero-side .ln{ width:46px; height:1px; background:var(--faint-2); display:inline-block; }
+/* pipeline */
+.split{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+.split h2{font-size:clamp(38px,4.6vw,61px);line-height:1;letter-spacing:-.04em;margin-top:18px}
+.split p{color:var(--silver);max-width:44ch;line-height:1.5}
+.pipe{background:var(--kelp);border-radius:16px;padding:12px;min-width:0}
+.pipe-top{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 12px;gap:10px;flex-wrap:wrap}
+.pipe-top .stat{font-size:40px;line-height:1;letter-spacing:-.04em;color:var(--phosphor);font-weight:500}
+.row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:18px;border-radius:10px}
+.row:hover{background:rgba(3,81,75,.5)}
+.row + .row{border-top:1px solid var(--line)}
+.row strong{display:block;font-size:16px;font-weight:500;color:var(--white)}
+.row span.sub{font-size:13px;color:var(--silver)}
+.pill{font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;padding:7px 10px;border-radius:6px;white-space:nowrap}
+.p-live{background:var(--aqua);color:#012624}
+.p-prep{background:rgba(3,81,75,.6);color:var(--aqua)}
+.p-wait{background:var(--deep);color:var(--silver)}
+.p-offer{background:var(--phosphor);color:#012624}
 
-  h1{
-    font-family:var(--serif); font-weight:400;
-    font-size:clamp(2.7rem, 6.6vw, 5.3rem); line-height:1.02; letter-spacing:-0.015em;
-    margin:26px 0 28px; color:var(--bone);
-  }
-  h1 em{ font-style:italic; color:var(--gold); }
-  .sub{ font-size:clamp(1.04rem,1.45vw,1.28rem); color:var(--bone-dim); font-weight:300; max-width:46ch; line-height:1.55; }
+/* audience */
+.who{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.who div{padding:36px 28px;min-width:0;background:var(--kelp);border-radius:16px}
+.who .from{font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
+.who h3{font-size:24px;letter-spacing:-.02em;line-height:1.3;margin:16px 0 8px}
+.who p{color:var(--silver);font-size:15px;margin:0;line-height:1.45}
 
-  /* CTA form */
-  .cta-form{ margin-top:38px; max-width:480px; }
-  .field-row{ display:flex; gap:10px; }
-  .input{
-    flex:1; min-width:0; background:var(--surface); border:1px solid var(--faint-2); color:var(--bone);
-    padding:0.85rem 1rem; border-radius:var(--radius); font-family:var(--sans); font-size:0.96rem;
-    transition:border-color .25s, box-shadow .25s, background .25s;
-  }
-  .input::placeholder{ color:var(--muted); }
-  .input:focus{ outline:none; border-color:var(--gold); background:var(--bg-2); box-shadow:0 0 0 4px rgba(216,178,106,0.12); }
-  .err{ font-family:var(--mono); font-size:0.74rem; color:#E59C8A; margin-top:9px; letter-spacing:0.02em; min-height:1em; display:block; }
-  .note{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); letter-spacing:0.04em; margin-top:14px; }
+/* join: the recessed well */
+.final{position:relative;overflow:hidden;border-radius:16px;background:var(--deep);padding:120px 28px;text-align:center}
+.final .stat{display:block;font-size:clamp(64px,9vw,96px);line-height:1;letter-spacing:-.046em;color:var(--phosphor);font-weight:500;margin-top:18px}
+.final h2{font-size:clamp(38px,5vw,61px);line-height:1;letter-spacing:-.04em;margin-top:28px}
+.final p{color:var(--silver);max-width:44ch;margin:22px auto 34px;line-height:1.5}
+form.join{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:640px;margin:0 auto}
+form.join input,form.join select{flex:1 1 200px;min-width:0;background:var(--kelp);border:1px solid var(--line);color:var(--white);border-radius:6px;padding:15px 16px;font:inherit;font-size:15px}
+form.join input::placeholder{color:var(--silver)}
+.ok-msg{margin-top:20px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);min-height:1.4em}
+footer{background:var(--deep);padding-block:64px 72px;color:var(--silver);font-size:13px;margin-top:120px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
 
-  .cta-joined{ display:none; flex-direction:column; gap:6px; margin-top:38px; max-width:480px;
-    background:var(--surface); border:1px solid var(--faint-2); border-radius:12px; padding:22px 24px; box-shadow:var(--shadow); }
-  .cta-joined .ok{ display:flex; align-items:center; gap:12px; font-family:var(--serif); font-size:1.5rem; color:var(--bone); }
-  .check{ width:30px; height:30px; border-radius:50%; background:rgba(159,203,139,0.14); border:1px solid var(--green); display:grid; place-items:center; flex:none; }
-  .check svg{ width:15px; height:15px; color:var(--green); }
-  .cta-joined p{ font-size:0.92rem; color:var(--bone-dim); }
-  .cta-joined .em{ color:var(--gold); font-family:var(--mono); font-size:0.84rem; }
 
-  /* seats meter */
-  .seats{ margin-top:22px; max-width:480px; }
-  .seats .meta{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
-  .seats .meta b{ color:var(--gold); font-weight:500; }
-  .bar{ height:4px; border-radius:99px; background:var(--faint); overflow:hidden; }
-  .bar > i{ display:block; height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright)); transition:width 1s cubic-bezier(.4,0,.2,1); }
+/* start card, FAQ, mobile CTA */
+.start{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;background:var(--deep);border-radius:16px;padding:28px 32px;margin-bottom:64px}
+.start p{margin:0;color:var(--silver);line-height:1.5;max-width:70ch}
+.start b{color:var(--white);font-weight:500}
+.faq{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.faq div{background:var(--kelp);border-radius:16px;padding:28px;min-width:0}
+.faq h3{font-size:20px;letter-spacing:-.02em;line-height:1.3;margin-bottom:10px}
+.faq p{margin:0;color:var(--silver);font-size:15px;line-height:1.5}
+.mcta{display:none}
+@media (max-width:980px){.faq{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){
+  .start{grid-template-columns:1fr;gap:10px;padding:24px 22px}
+  .faq{grid-template-columns:1fr}
+  .mcta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:45;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(1,29,28,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .mcta .btn{flex:1;justify-content:center}
+  footer{padding-bottom:110px}
+}
 
-  /* hero product glimpse */
-  .glimpse{
-    background:linear-gradient(165deg, rgba(27,24,20,0.9), rgba(15,14,12,0.92));
-    border:1px solid var(--faint-2); border-radius:18px; padding:22px; position:relative;
-    box-shadow:var(--shadow); backdrop-filter:blur(2px);
-  }
-  .glimpse::before{ content:''; position:absolute; inset:0; border-radius:18px; padding:1px;
-    background:linear-gradient(160deg, rgba(216,178,106,0.5), transparent 40%); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; }
-  .glimpse-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
-  .glimpse-head .t{ font-family:var(--mono); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--bone-dim); }
-  .live{ font-family:var(--mono); font-size:0.66rem; letter-spacing:0.1em; color:var(--gold); display:inline-flex; align-items:center; gap:6px; }
-  .live i{ width:6px; height:6px; border-radius:50%; background:var(--gold); animation:blink 1.8s infinite; }
-  @keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:0.25; } }
+/* motion: text is hidden only until GSAP splits it, and never under reduced motion */
+@media (prefers-reduced-motion:no-preference){.gs-words{visibility:hidden}}
 
-  .role{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-top:1px solid var(--faint); }
-  .role:first-of-type{ border-top:none; }
-  .role .info{ display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .role .title{ font-size:0.92rem; color:var(--bone); font-weight:500; }
-  .role .seg{ font-family:var(--mono); font-size:0.68rem; letter-spacing:0.04em; color:var(--muted); }
-  .pill{ font-family:var(--mono); font-size:0.64rem; letter-spacing:0.06em; text-transform:uppercase; padding:5px 9px; border-radius:99px; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; border:1px solid transparent; }
-  .pill i{ width:6px; height:6px; border-radius:50%; }
-  .pill.sourced{ color:var(--muted); border-color:var(--faint-2); } .pill.sourced i{ background:var(--muted); }
-  .pill.applied{ color:var(--blue); border-color:rgba(143,183,214,0.4); } .pill.applied i{ background:var(--blue); }
-  .pill.reply{ color:var(--gold-bright); border-color:rgba(234,201,135,0.4); } .pill.reply i{ background:var(--gold-bright); }
-  .pill.offer{ color:var(--green); border-color:rgba(159,203,139,0.45); background:rgba(159,203,139,0.07); } .pill.offer i{ background:var(--green); }
-  .glimpse-foot{ margin-top:16px; padding-top:14px; border-top:1px solid var(--faint); font-family:var(--mono); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); display:flex; gap:10px; align-items:center; }
-  .glimpse-foot b{ color:var(--gold); font-weight:500; }
+@media (max-width:980px){
+  .head,.split{grid-template-columns:1fr}
+  .filter{grid-template-columns:1fr}
+  .qs{flex-direction:row;overflow-x:auto;padding-bottom:4px}
+  .qs button{flex:0 0 240px}
+  .steps{grid-template-columns:1fr 1fr}
+  .who{grid-template-columns:1fr 1fr}
+  .stage{width:min(840px,86%)}
+}
+@media (max-width:760px){
+  .links{display:none}
+  .hero{min-height:auto;padding-block:96px 64px}
+  section.block{padding-block:88px}
+  .track{gap:64px;padding-left:30px}
+  .stage{width:100%;grid-template-columns:1fr;padding:28px 22px}
+  .stage.right{align-self:auto}
+  .stage-art{order:-1}
+  .steps,.who{grid-template-columns:1fr}
+  .answer{padding:24px 20px 28px}
+  .final{padding:80px 20px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important}
+}
 
-  /* ---------- TICKER ---------- */
-  .ticker{ border-top:1px solid var(--faint); border-bottom:1px solid var(--faint); padding:18px 0; overflow:hidden; position:relative; z-index:2; background:rgba(15,14,12,0.4); }
-  .ticker::before,.ticker::after{ content:''; position:absolute; top:0; bottom:0; width:120px; z-index:3; pointer-events:none; }
-  .ticker::before{ left:0; background:linear-gradient(90deg,var(--bg),transparent); }
-  .ticker::after{ right:0; background:linear-gradient(270deg,var(--bg),transparent); }
-  .track{ display:flex; gap:48px; width:max-content; animation:marquee 38s linear infinite; }
-  .track span{ font-family:var(--mono); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--bone-dim); display:inline-flex; align-items:center; gap:48px; }
-  .track span::after{ content:'✦'; color:var(--gold); font-size:0.7rem; }
-  @keyframes marquee{ to{ transform:translateX(-50%); } }
-
-  /* ---------- SECTIONS ---------- */
-  section{ padding:clamp(5rem,9vw,8.5rem) 0; position:relative; z-index:2; }
-  .section-head{ max-width:680px; }
-  .section-head h2{ font-family:var(--serif); font-weight:400; font-size:clamp(2rem,4.2vw,3.2rem); line-height:1.08; letter-spacing:-0.01em; margin:18px 0 0; color:var(--bone); }
-  .section-head h2 em{ font-style:italic; color:var(--gold); }
-  .section-head p{ color:var(--bone-dim); font-weight:300; font-size:1.05rem; margin-top:18px; max-width:54ch; }
-
-  /* thesis row */
-  .thesis-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; margin-top:62px; background:var(--faint); border:1px solid var(--faint); border-radius:14px; overflow:hidden; }
-  .thesis-row .cell{ background:var(--bg); padding:34px 30px; }
-  .thesis-row .k{ font-family:var(--mono); font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold); }
-  .thesis-row .v{ font-family:var(--serif); font-size:1.45rem; color:var(--bone); margin-top:14px; line-height:1.2; }
-  .thesis-row .d{ font-size:0.9rem; color:var(--muted); margin-top:10px; }
-
-  /* steps */
-  .steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-top:64px; }
-  .step{ padding:30px 26px 30px 0; border-top:1px solid var(--faint-2); position:relative; }
-  .step:not(:last-child){ padding-right:34px; }
-  .num{ font-family:var(--mono); font-size:0.82rem; color:var(--gold); letter-spacing:0.1em; }
-  .step h3{ font-family:var(--serif); font-weight:400; font-size:1.5rem; color:var(--bone); margin:18px 0 12px; line-height:1.15; }
-  .step p{ font-size:0.92rem; color:var(--muted); line-height:1.6; }
-
-  /* features */
-  .features{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:62px; }
-  .card{ background:var(--surface); border:1px solid var(--faint); border-radius:14px; padding:30px 28px; transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s; position:relative; overflow:hidden; }
-  .card:hover{ transform:translateY(-5px); border-color:rgba(216,178,106,0.45); box-shadow:var(--shadow); background:var(--surface-2); }
-  .ic{ width:42px; height:42px; border-radius:10px; border:1px solid var(--faint-2); display:grid; place-items:center; color:var(--gold); margin-bottom:20px; transition:border-color .3s, background .3s; }
-  .card:hover .ic{ border-color:var(--gold); background:rgba(216,178,106,0.08); }
-  .ic svg{ width:21px; height:21px; }
-  .card h3{ font-size:1.12rem; font-weight:600; color:var(--bone); margin-bottom:9px; letter-spacing:-0.005em; }
-  .card p{ font-size:0.91rem; color:var(--muted); line-height:1.62; }
-
-  /* pricing */
-  .pricing-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:62px; }
-  .tier-card{ background:var(--surface); border:1px solid var(--faint); border-radius:14px; padding:34px 30px; display:flex; flex-direction:column; transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s; position:relative; overflow:hidden; }
-  .tier-card:hover{ transform:translateY(-5px); border-color:rgba(216,178,106,0.45); box-shadow:var(--shadow); background:var(--surface-2); }
-  .tier-card.featured{ border-color:rgba(216,178,106,0.5); background:linear-gradient(160deg, var(--surface-2), var(--bg-2)); }
-  .tier-card.featured:hover{ background:linear-gradient(160deg, var(--surface-2), var(--bg-2)); }
-  .tier-card.featured::before{ content:''; position:absolute; top:-55%; left:50%; transform:translateX(-50%); width:340px; height:230px; background:radial-gradient(closest-side, rgba(216,178,106,0.2), transparent); pointer-events:none; }
-  .tier-badge{ align-self:flex-start; position:relative; display:inline-flex; align-items:center; font-family:var(--mono); font-size:0.62rem; font-weight:600; letter-spacing:0.13em; text-transform:uppercase; color:#1a1206; background:var(--gold); padding:5px 11px; border-radius:99px; margin-bottom:20px; }
-  .tier-head{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; position:relative; }
-  .tier-head h3{ font-family:var(--serif); font-weight:400; font-size:1.6rem; color:var(--bone); letter-spacing:-0.005em; }
-  .tier-price{ font-family:var(--mono); display:flex; align-items:baseline; gap:3px; color:var(--gold); white-space:nowrap; }
-  .tier-price .amount{ font-size:1.35rem; font-weight:600; letter-spacing:-0.01em; }
-  .tier-price .period{ font-size:0.7rem; color:var(--muted); letter-spacing:0.02em; }
-  .tier-blurb{ font-size:0.92rem; color:var(--muted); line-height:1.6; margin-top:14px; position:relative; }
-  .tier-includes{ font-family:var(--mono); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); margin-top:24px; position:relative; }
-  .tier-features{ list-style:none; margin-top:16px; margin-bottom:30px; flex:1; position:relative; }
-  .tier-features li{ position:relative; padding-left:22px; font-size:0.89rem; color:var(--bone-dim); line-height:1.55; }
-  .tier-features li:not(:last-child){ margin-bottom:12px; }
-  .tier-features li::before{ content:''; position:absolute; left:0; top:0.55em; width:6px; height:6px; border-radius:50%; background:var(--gold); opacity:0.65; }
-  .tier-card .tier-cta{ justify-content:center; width:100%; margin-top:auto; position:relative; }
-
-  /* CTA band */
-  .cta-band{ position:relative; }
-  .cta-box{ background:linear-gradient(160deg, var(--surface-2), var(--bg-2)); border:1px solid var(--faint-2); border-radius:22px; padding:clamp(40px,6vw,72px); text-align:center; position:relative; overflow:hidden; box-shadow:var(--shadow); }
-  .cta-box::before{ content:''; position:absolute; top:-40%; left:50%; transform:translateX(-50%); width:600px; height:380px; background:radial-gradient(closest-side, rgba(216,178,106,0.18), transparent); pointer-events:none; }
-  .cta-box h2{ font-family:var(--serif); font-weight:400; font-size:clamp(2rem,4.6vw,3.4rem); line-height:1.06; color:var(--bone); position:relative; }
-  .cta-box h2 em{ font-style:italic; color:var(--gold); }
-  .cta-box p{ color:var(--bone-dim); font-weight:300; margin:18px auto 0; max-width:48ch; position:relative; }
-  .cta-box .cta-form,.cta-box .cta-joined{ margin-left:auto; margin-right:auto; position:relative; }
-  .cta-box .seats{ margin-left:auto; margin-right:auto; }
-
-  /* footer */
-  footer{ border-top:1px solid var(--faint); padding:56px 0 48px; position:relative; z-index:2; }
-  .foot-inner{ display:flex; justify-content:space-between; align-items:flex-start; gap:30px; flex-wrap:wrap; }
-  .foot-brand .brand{ font-size:1.7rem; }
-  .foot-brand p{ font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:10px; }
-  .foot-links{ display:flex; gap:42px; }
-  .foot-col h4{ font-family:var(--mono); font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
-  .foot-col a{ display:block; font-size:0.88rem; color:var(--bone-dim); text-decoration:none; margin-bottom:10px; transition:color .2s; }
-  .foot-col a:hover{ color:var(--gold); }
-  .copy{ margin-top:48px; padding-top:24px; border-top:1px solid var(--faint); font-family:var(--mono); font-size:0.7rem; letter-spacing:0.06em; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; }
-
-  /* reveal */
-  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .9s cubic-bezier(.2,.6,.2,1), transform .9s cubic-bezier(.2,.6,.2,1); }
-  .reveal.in{ opacity:1; transform:none; }
-
-  /* hero load stagger */
-  .anim{ opacity:0; transform:translateY(14px); animation:up .9s cubic-bezier(.2,.6,.2,1) forwards; }
-  .d1{ animation-delay:.05s; } .d2{ animation-delay:.18s; } .d3{ animation-delay:.31s; } .d4{ animation-delay:.44s; } .d5{ animation-delay:.57s; } .d6{ animation-delay:.7s; }
-  @keyframes up{ to{ opacity:1; transform:none; } }
-
-  /* responsive */
-  @media (max-width:980px){
-    .hero-grid{ grid-template-columns:1fr; gap:48px; }
-    .hero-side{ display:none; }
-    .glimpse{ max-width:480px; }
-    .thesis-row{ grid-template-columns:1fr; }
-    .pricing-grid{ grid-template-columns:1fr; }
-    .steps{ grid-template-columns:1fr 1fr; }
-    .features{ grid-template-columns:1fr 1fr; }
-  }
-  @media (max-width:640px){
-    .nav-links a:not(.btn-ghost){ display:none; }
-    header{ padding:130px 0 60px; }
-    .field-row{ flex-direction:column; }
-    .steps{ grid-template-columns:1fr; }
-    .features{ grid-template-columns:1fr; }
-    .foot-links{ gap:30px; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ animation:none !important; transition:none !important; }
-    .reveal{ opacity:1; transform:none; }
-    .anim{ opacity:1; transform:none; }
-    .track{ animation:none; }
-  }
+.ui-mono.ink,.eng.ink{fill:#2E4A48}.ui-h.ink{fill:#012624}
+.ui-bad{fill:#fad1ff;text-decoration:underline}
 </style>
-</head>
-<body>
-  <div class="bg-glow"></div>
-  <div class="grain"></div>
 
-  <nav id="nav">
-    <div class="nav-inner">
-      <a href="#top" class="brand">EffyX<span class="dot">.</span></a>
-      <div class="nav-links">
-        <a href="#how">How it works</a>
-        <a href="#features">Capabilities</a>
-        <a href="#thesis">Why EffyX</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#access" class="btn btn-ghost">Request access</a>
-      </div>
+<nav>
+  <div class="wrap">
+    <a href="#top" class="logo"><i></i><span><span>Effy</span><b>X</b></span></a>
+    <div class="links">
+      <a href="#path">Hiring path</a>
+      <a href="#filter">HR filter</a>
+      <a href="#faq">FAQ</a>
+      <a href="#who">Who it's for</a>
     </div>
-  </nav>
+    <a href="agent.html" class="btn btn-cob">Join the pilot</a>
+  </div>
+</nav>
 
-  <header id="top">
-    <div class="wrap">
-      <div class="hero-side"><span class="ln"></span> EffyX — 001 / Career agent for sellers</div>
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <span class="eyebrow anim d1"><span class="pulse"></span> Early access · Built for high-tech sellers</span>
-          <h1 class="anim d2">Land your next high-tech&nbsp;sales role — <em>on autopilot.</em></h1>
-          <p class="sub anim d3">EffyX is your AI career agent. It sources the right roles, tailors every application, and opens doors with hiring managers — so you stay in selling mode while it runs the hunt.</p>
-
-          <div class="anim d4" data-cta>
-            <form class="cta-form" novalidate autocomplete="on">
-              <div class="field-row">
-                <input class="input" type="email" name="email" inputmode="email" placeholder="you@company.com" aria-label="Work email" required />
-                <button class="btn btn-primary" type="submit">Request access →</button>
-              </div>
-              <span class="err" data-error aria-live="polite"></span>
-              <p class="note">First cohort is limited · No spam — just your seat.</p>
-            </form>
-            <div class="cta-joined" role="status" aria-live="polite">
-              <div class="ok"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> You're on the list.</div>
-              <p>Seat reserved for <span class="em" data-email>your email</span>. We'll reach out as the first cohort opens.</p>
-            </div>
-          </div>
-
-          <div class="seats anim d5">
-            <div class="meta"><span>First cohort</span><span><b data-claimed>0</b> claimed · <b data-seats>100</b> seats left</span></div>
-            <div class="bar"><i data-bar></i></div>
-          </div>
-        </div>
-
-        <div class="glimpse anim d6" aria-hidden="true">
-          <div class="glimpse-head">
-            <span class="t">Your pipeline</span>
-            <span class="live"><i></i> EffyX · live</span>
-          </div>
-          <div class="role">
-            <div class="info"><span class="title">Strategic AE — Cloud Security</span><span class="seg">Enterprise · $1.2M OTE</span></div>
-            <span class="pill offer"><i></i> Offer</span>
-          </div>
-          <div class="role">
-            <div class="info"><span class="title">Enterprise AE — Data Platform</span><span class="seg">Named accounts · West</span></div>
-            <span class="pill reply"><i></i> Replied</span>
-          </div>
-          <div class="role">
-            <div class="info"><span class="title">RVP, Sales — DevTools</span><span class="seg">Leadership · Series C</span></div>
-            <span class="pill applied"><i></i> Applied</span>
-          </div>
-          <div class="role">
-            <div class="info"><span class="title">Mid-Market AE — AI Platform</span><span class="seg">Inbound-led · Remote</span></div>
-            <span class="pill sourced"><i></i> Sourced</span>
-          </div>
-          <div class="glimpse-foot">Auto-sourced &nbsp;·&nbsp; <b>tailored</b> &nbsp;·&nbsp; tracked</div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="ticker" aria-hidden="true">
-    <div class="track">
-      <span>SaaS</span><span>Cybersecurity</span><span>Cloud Infrastructure</span><span>FinTech</span><span>DevTools</span><span>AI Platforms</span><span>Data &amp; Analytics</span><span>Cloud Communications</span>
-      <span>SaaS</span><span>Cybersecurity</span><span>Cloud Infrastructure</span><span>FinTech</span><span>DevTools</span><span>AI Platforms</span><span>Data &amp; Analytics</span><span>Cloud Communications</span>
+<header class="hero" id="top">
+  <canvas id="orb" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="mono">AI career agent · Pilot cohort open</div>
+    <h1 class="gs-words"><span class="thin">Land your next</span> <span class="bold">high-tech sales role</span></h1>
+    <p class="lede">You already know how to sell. EffyX teaches you how high-tech hires: the recruiter screen, the hiring manager, the HR filter that rejects you over one wrong word. A personal agent that prepares you for every stage until the offer.</p>
+    <div class="cta-row">
+      <a href="agent.html" class="btn btn-cob">Start my program <span aria-hidden="true">→</span></a>
+      <a href="#path" class="btn btn-ghost">See the hiring path</a>
     </div>
   </div>
+</header>
 
-  <section id="thesis">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">The thesis</span>
-        <h2>You can sell anything. Your job search shouldn't be the hardest <em>deal you run.</em></h2>
-        <p>Top sellers lose roles not for lack of talent, but for lack of time, the sourcing, the tailoring, the follow-up. EffyX turns that grind into a system, and runs it for you.</p>
-      </div>
-      <div class="thesis-row reveal">
-        <div class="cell"><div class="k">More shots on goal</div><div class="v">Every role worth your time</div><div class="d">Continuously sourced and ranked to your strengths — not a job-board firehose.</div></div>
-        <div class="cell"><div class="k">Tailored, never templated</div><div class="v">Each application, custom</div><div class="d">Resumes and answers shaped to the role and the buyer, reviewed by you before send.</div></div>
-        <div class="cell"><div class="k">Warm, not cold</div><div class="v">Hiring managers, not portals</div><div class="d">Personalized outreach that reaches the decision-maker — the move you'd make for any deal.</div></div>
-      </div>
+<section class="block" id="path">
+  <div class="wrap">
+    <div class="head">
+      <h2><span class="thin">Six stages.</span> <span class="bold">Prepared for each.</span></h2>
+      <p>The road from the first call to a signed offer. For each stage: what it tests, where candidates fall, and what EffyX does about it.</p>
     </div>
-  </section>
-
-  <section id="how">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">How it works</span>
-        <h2>Four steps. <em>Five minutes</em> of your time.</h2>
-      </div>
-      <div class="steps">
-        <div class="step reveal">
-          <span class="num">01</span>
-          <h3>Profile your wins</h3>
-          <p>Tell EffyX your segments, ICP, quota attainment, and what a dream role looks like. Once, in five minutes.</p>
-        </div>
-        <div class="step reveal">
-          <span class="num">02</span>
-          <h3>We source &amp; rank</h3>
-          <p>EffyX scans the market continuously and surfaces only the roles worth pursuing — ranked to your strengths.</p>
-        </div>
-        <div class="step reveal">
-          <span class="num">03</span>
-          <h3>Apply &amp; reach out</h3>
-          <p>Every application is tailored to the role. EffyX also drafts sharp notes to hiring managers — your unfair advantage.</p>
-        </div>
-        <div class="step reveal">
-          <span class="num">04</span>
-          <h3>Track like a pipeline</h3>
-          <p>Applied, in conversation, interviewing, offer — one board. No spreadsheets, no dropped follow-ups.</p>
-        </div>
-      </div>
+    <div class="start">
+      <span class="mono">Before stage 01</span>
+      <p><b>Profile and translate.</b> Upload your CV. The agent maps what you sell today to what high-tech sales teams measure, and rewrites your CV and LinkedIn in the words recruiters scan for. Every change is saved, and you can edit it yourself.</p>
     </div>
-  </section>
-
-  <section id="features">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Capabilities</span>
-        <h2>An agent that works your search <em>like you work a quarter.</em></h2>
-      </div>
-      <div class="features">
-        <div class="card reveal">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></div>
-          <h3>Intelligent role matching</h3>
-          <p>Roles ranked to your ICP, segment, and seniority — surfaced before they're crowded.</p>
-        </div>
-        <div class="card reveal">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="m10.5 12 1 1 2.5-2.5"/></svg></div>
-          <h3>Application autopilot</h3>
-          <p>Resumes and screening answers tailored per role — drafted by EffyX, approved by you.</p>
-        </div>
-        <div class="card reveal">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v11H8l-4 3z"/><path d="M8 9h8M8 12h5"/></svg></div>
-          <h3>Hiring-manager outreach</h3>
-          <p>Personalized intros that actually get replies — straight to the decision-maker.</p>
-        </div>
-        <div class="card reveal">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="4" height="16" rx="1"/><rect x="10" y="8" width="4" height="12" rx="1"/><rect x="16" y="6" width="4" height="14" rx="1"/></svg></div>
-          <h3>Pipeline tracking</h3>
-          <p>Your entire search as a deal board — every stage, every follow-up, in one view.</p>
-        </div>
-        <div class="card reveal">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M9.5 9.5c0-1.2 1.1-2 2.5-2s2.5.8 2.5 2-1.1 1.7-2.5 1.7-2.5.6-2.5 1.8 1.1 2 2.5 2 2.5-.8 2.5-2"/></svg></div>
-          <h3>Comp intelligence</h3>
-          <p>Know the OTE, base/variable split, and market band before you ever walk into the room.</p>
-        </div>
-        <div class="card reveal">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.5.4.5 1 .5 1.6h6c0-.6 0-1.2.5-1.6A6 6 0 0 0 12 3z"/></svg></div>
-          <h3>Interview prep</h3>
-          <p>Briefs on the company, the team, and the close — so you walk in ready to win the room.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="pricing">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Pricing</span>
-        <h2>One system. <em>Three ways to run it.</em></h2>
-        <p>Cumulative by design — Gold runs everything in Silver, and Diamond runs everything in Gold and Silver, plus an edge of its own.</p>
-      </div>
-      <div class="pricing-grid" data-pricing-grid></div>
-    </div>
-  </section>
-
-  <section id="edge">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">The long game</span>
-        <h2>Built to get sharper. <em>Built to stay with you.</em></h2>
-        <p>Most tools forget you the second you accept an offer. EffyX doesn't — every search that closes makes the next one sharper, and keeps what it learns about you ready for round two.</p>
-      </div>
-      <div class="thesis-row reveal">
-        <div class="cell"><div class="k">Smarter with every close</div><div class="v">Real outcomes, not job-board noise</div><div class="d">Matches, comp bands, and outreach lines sharpen from real replies and real offers — not scraped listings.</div></div>
-        <div class="cell"><div class="k">Built to remember</div><div class="v">This search — and the one after it</div><div class="d">The templates that worked, the comp you learned, the people you met. Ready next time — not from zero.</div></div>
-        <div class="cell"><div class="k">Not for everyone</div><div class="v">Built for operators who already run pipelines</div><div class="d">RVPs, named-account AEs, SDR leaders. If you already think in stages, segments, and quota — you're exactly who this is for.</div></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="access" class="cta-band">
-    <div class="wrap">
-      <div class="cta-box reveal" data-cta>
-        <span class="eyebrow" style="justify-content:center;"><span class="pulse"></span> Request access</span>
-        <h2>Be in the <em>first cohort.</em></h2>
-        <p>We're onboarding a limited group of positions. Reserve your seat and we'll reach out as spots open.</p>
-
-        <form class="cta-form" novalidate autocomplete="on">
-          <div class="field-row">
-            <input class="input" type="email" name="email" inputmode="email" placeholder="you@company.com" aria-label="Work email" required />
-            <button class="btn btn-primary" type="submit">Reserve my seat →</button>
-          </div>
-          <span class="err" data-error aria-live="polite"></span>
-          <p class="note">No spam — just your seat. Unsubscribe anytime.</p>
-        </form>
-        <div class="cta-joined" role="status" aria-live="polite">
-          <div class="ok"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Seat reserved.</div>
-          <p>We've saved a spot for <span class="em" data-email>your email</span>. Welcome to EffyX.</p>
-        </div>
-
-        <div class="seats">
-          <div class="meta"><span>First cohort</span><span><b data-claimed>0</b> claimed · <b data-seats>100</b> seats left</span></div>
-          <div class="bar"><i data-bar></i></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="wrap">
-      <div class="foot-inner">
-        <div class="foot-brand">
-          <a href="#top" class="brand">EffyX<span class="dot">.</span></a>
-          <p>AI career agent for high-tech sales</p>
-        </div>
-        <div class="foot-links">
-          <div class="foot-col">
-            <h4>Product</h4>
-            <a href="#how">How it works</a>
-            <a href="#features">Capabilities</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#access">Request access</a>
-          </div>
-          <div class="foot-col">
-            <h4>Company</h4>
-            <a href="#">About</a>
-            <a href="#">Careers</a>
-            <a href="#">Contact</a>
-          </div>
-          <div class="foot-col">
-            <h4>Legal</h4>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
+    <div class="track" id="track">
+      <svg class="wires" id="wires" aria-hidden="true"></svg>
+      <article class="stage left" data-i="0">
+        <div class="stage-copy">
+          <span class="mono step">Stage 01 · Phone screen</span>
+          <h3>The recruiter call</h3>
+          <p class="tests"><span class="mono k">Tests</span>Can you tell your story in numbers, in a few minutes.</p>
+          <div class="det">
+            <p><span class="mono k bad">Where people fall</span>Selling traits, like hungry and competitive, instead of evidence.</p>
+            <p><span class="mono k">How EffyX preps you</span>Turns your experience into numbers: the target, how much you hit, and for how long. Then rehearses your opening.</p>
           </div>
         </div>
+        <div class="stage-art"><svg class="scene s-phone" viewBox="-80.48 -94.5 193.87 205.5" role="img" aria-labelledby="sc1-t"><title id="sc1-t">A phone on a dock showing a recruiter call, with one phrase in the answer flagged</title><g class="bx base" ><polygon class="fl" points="-74.48,43 32.91,105 32.91,97 -74.48,35"/><polygon class="fr" points="107.39,62 32.91,105 32.91,97 107.39,54"/><polygon class="ft" points="0,-8 107.39,54 32.91,97 -74.48,35"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 0 -8)"><rect x="5" y="5" width="114" height="76" rx="3" class="groove"/><circle cx="10" cy="10" r="1.5" class="screw"/><line x1="9.1" y1="10" x2="10.9" y2="10" class="slot"/><circle cx="114" cy="10" r="1.5" class="screw"/><line x1="113.1" y1="10" x2="114.9" y2="10" class="slot"/><circle cx="10" cy="76" r="1.5" class="screw"/><line x1="9.1" y1="76" x2="10.9" y2="76" class="slot"/><circle cx="114" cy="76" r="1.5" class="screw"/><line x1="113.1" y1="76" x2="114.9" y2="76" class="slot"/></g><g class="" transform="matrix(0.87 0.5 0 1 -6.93 75)"><rect x="0" y="1" width="36" height="5" rx="1" class="plate"/><text x="3" y="4.9" class="eng">STAGE 01 · PHONE</text></g><g class="bx base" ><polygon class="fl" points="-31.18,38 29.44,73 29.44,64 -31.18,29"/><polygon class="fr" points="50.23,61 29.44,73 29.44,64 50.23,52"/><polygon class="ft" points="-10.39,17 50.23,52 29.44,64 -31.18,29"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 -10.39 17)"><rect x="5" y="9" width="60" height="9" rx="2" class="groove"/></g><g class="bx dark" ><polygon class="fl" points="-19.05,29 29.44,57 29.44,-57 -19.05,-85"/><polygon class="fr" points="35.51,53.5 29.44,57 29.44,-57 35.51,-60.5"/><polygon class="ft" points="-12.99,-88.5 35.51,-60.5 29.44,-57 -19.05,-85"/></g><g class="bx dark" ><polygon class="fl" points="31.18,-31 32.22,-30.4 32.22,-42.4 31.18,-43"/><polygon class="fr" points="34.81,-31.9 32.22,-30.4 32.22,-42.4 34.81,-43.9"/><polygon class="ft" points="33.77,-44.5 34.81,-43.9 32.22,-42.4 31.18,-43"/></g><g class="bx dark" ><polygon class="fl" points="31.18,-13 32.22,-12.4 32.22,-20.4 31.18,-21"/><polygon class="fr" points="34.81,-13.9 32.22,-12.4 32.22,-20.4 34.81,-21.9"/><polygon class="ft" points="33.77,-22.5 34.81,-21.9 32.22,-20.4 31.18,-21"/></g><g class="" transform="matrix(0.87 0.5 0 1 -19.05 -85)">
+    <rect x="2.5" y="2.5" width="51" height="109" rx="7" class="screen"/>
+    <rect x="21" y="6" width="14" height="3.4" rx="1.7" class="island"/>
+    <text x="7" y="17" class="ui-mono">RECRUITER CALL</text><text x="49" y="17" class="ui-mono end" data-clock>02:14</text>
+    <circle cx="28" cy="28" r="6.5" class="avatar"/><text x="28" y="30.2" class="ui-ini">R</text>
+    <g class="bub b1"><rect x="6" y="39" width="40" height="15" rx="4" class="bub-them"/>
+      <text x="9.5" y="45.4" class="ui-txt">Walk me through your</text><text x="9.5" y="50.6" class="ui-txt">background in 2 min.</text></g>
+    <g class="bub b2"><rect x="10" y="58" width="40" height="15" rx="4" class="bub-me"/>
+      <text x="13.5" y="64.4" class="ui-txt">Honestly, I'm <tspan class="ui-bad">tired of</tspan></text><text x="13.5" y="69.6" class="ui-txt">field work...</text></g>
+    <g class="bub b3"><rect x="10" y="77" width="40" height="8" rx="4" class="flag"/><text x="30" y="82.3" class="ui-mono flag-t mid">HR FLAG · NEGATIVE FRAMING</text></g>
+    <g class="bub b4"><rect x="6" y="89" width="44" height="15" rx="4" class="bub-fix"/>
+      <text x="9.5" y="95.4" class="ui-txt fix">EffyX: open with your</text><text x="9.5" y="100.6" class="ui-txt fix">numbers instead.</text></g></g></svg></div>
+      </article>
+      <article class="stage right" data-i="1">
+        <div class="stage-copy">
+          <span class="mono step">Stage 02 · Home assignment</span>
+          <h3>The task</h3>
+          <p class="tests"><span class="mono k">Tests</span>Proof of skill: a presentation, a case or a role-play, on a deadline.</p>
+          <div class="det">
+            <p><span class="mono k bad">Where people fall</span>Delivery under pressure, and hours spent without knowing what the task measures.</p>
+            <p><span class="mono k">How EffyX preps you</span>Decodes what the task really tests, then rehearses the delivery with the questions you didn't plan for.</p>
+          </div>
+        </div>
+        <div class="stage-art"><svg class="scene s-task" viewBox="-101.26 -50 249.29 193" role="img" aria-labelledby="sc2-t"><title id="sc2-t">A laptop showing a home assignment checklist, beside a countdown timer</title><g class="bx base" ><polygon class="fl" points="-95.26,55 46.77,137 46.77,129 -95.26,47"/><polygon class="fr" points="142.03,82 46.77,137 46.77,129 142.03,74"/><polygon class="ft" points="0,-8 142.03,74 46.77,129 -95.26,47"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 0 -8)"><rect x="5" y="5" width="154" height="100" rx="3" class="groove"/><circle cx="10" cy="10" r="1.5" class="screw"/><line x1="9.1" y1="10" x2="10.9" y2="10" class="slot"/><circle cx="154" cy="10" r="1.5" class="screw"/><line x1="153.1" y1="10" x2="154.9" y2="10" class="slot"/><circle cx="10" cy="100" r="1.5" class="screw"/><line x1="9.1" y1="100" x2="10.9" y2="100" class="slot"/><circle cx="154" cy="100" r="1.5" class="screw"/><line x1="153.1" y1="100" x2="154.9" y2="100" class="slot"/></g><g class="" transform="matrix(0.87 0.5 0 1 6.93 107)"><rect x="0" y="1" width="36" height="5" rx="1" class="plate"/><text x="3" y="4.9" class="eng">STAGE 02 · TASK</text></g><g class="bx alu" ><polygon class="fl" points="-10.39,24 74.48,73 74.48,7 -10.39,-42"/><polygon class="fr" points="77.94,71 74.48,73 74.48,7 77.94,5"/><polygon class="ft" points="-6.93,-44 77.94,5 74.48,7 -10.39,-42"/></g><g class="" transform="matrix(0.87 0.5 0 1 -10.39 -42)">
+    <rect x="3" y="3" width="92" height="60" rx="2" class="screen"/>
+    <text x="8" y="12" class="ui-mono">HOME ASSIGNMENT</text>
+    <text x="8" y="20" class="ui-h">Discovery call role-play</text>
+    
+      <g class="row r0"><rect x="8" y="27" width="5.5" height="5.5" rx="1.2" class="cb"/>
+      <path d="M9.2 30 l1.6 1.6 l2.8 -3.2" class="tick"/>
+      <text x="17" y="31.6" class="ui-txt">Find what the task measures</text></g>
+      <g class="row r1"><rect x="8" y="37" width="5.5" height="5.5" rx="1.2" class="cb"/>
+      <path d="M9.2 40 l1.6 1.6 l2.8 -3.2" class="tick"/>
+      <text x="17" y="41.6" class="ui-txt">Rehearse the delivery</text></g>
+      <g class="row r2"><rect x="8" y="47" width="5.5" height="5.5" rx="1.2" class="cb"/>
+      <path d="M9.2 50 l1.6 1.6 l2.8 -3.2" class="tick"/>
+      <text x="17" y="51.6" class="ui-txt">Prep the questions you didn't plan</text></g></g><g class="bx alu" ><polygon class="fl" points="-60.62,53 24.25,102 24.25,98 -60.62,49"/><polygon class="fr" points="74.48,73 24.25,102 24.25,98 74.48,69"/><polygon class="ft" points="-10.39,20 74.48,69 24.25,98 -60.62,49"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 -10.39 20)"><rect x="8" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="14.9" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="21.8" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="28.700000000000003" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="35.6" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="42.5" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="49.400000000000006" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="56.300000000000004" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="63.2" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="70.1" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="77" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="83.9" y="7" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="8" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="14.9" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="21.8" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="28.700000000000003" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="35.6" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="42.5" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="49.400000000000006" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="56.300000000000004" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="63.2" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="70.1" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="77" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="83.9" y="13.4" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="8" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="14.9" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="21.8" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="28.700000000000003" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="35.6" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="42.5" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="49.400000000000006" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="56.300000000000004" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="63.2" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="70.1" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="77" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="83.9" y="19.8" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="8" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="14.9" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="21.8" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="28.700000000000003" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="35.6" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="42.5" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="49.400000000000006" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="56.300000000000004" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="63.2" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="70.1" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="77" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="83.9" y="26.200000000000003" width="5.6" height="5.1" rx="0.9" class="key"/><rect x="34" y="36" width="30" height="16" rx="2" class="pad"/></g><g class="bx dark" ><polygon class="fl" points="39.84,103 60.62,115 60.62,100 39.84,88"/><polygon class="fr" points="76.21,106 60.62,115 60.62,100 76.21,91"/><polygon class="ft" points="55.43,79 76.21,91 60.62,100 39.84,88"/></g><g class="" transform="matrix(0.87 0.5 0 1 39.84 88)"><rect x="2" y="2" width="20" height="9" rx="1.5" class="lcd"/><text x="12" y="8.8" class="ui-lcd mid" data-timer>47:59</text></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 55.43 79)"><circle cx="12" cy="9" r="2.4" class="knob"/></g></svg></div>
+      </article>
+      <article class="stage left" data-i="2">
+        <div class="stage-copy">
+          <span class="mono step">Stage 03 · Hiring manager + HR</span>
+          <h3>The table</h3>
+          <p class="tests"><span class="mono k">Tests</span>Attitude, credibility and how you solve problems.</p>
+          <div class="det">
+            <p><span class="mono k bad">Where people fall</span>One wrong word, like criticizing a past manager, or a defensive answer about weaknesses.</p>
+            <p><span class="mono k">How EffyX preps you</span>Trains the trap questions and builds a bank of your own problem-solving stories.</p>
+          </div>
+        </div>
+        <div class="stage-art"><svg class="scene s-mgr" viewBox="-102.99 -67 257.95 215" role="img" aria-labelledby="sc3-t"><title id="sc3-t">An interview table with a hiring manager card, an HR card and a pressure gauge</title><g class="bx base" ><polygon class="fl" points="-96.99,56 51.96,142 51.96,134 -96.99,48"/><polygon class="fr" points="148.96,86 51.96,142 51.96,134 148.96,78"/><polygon class="ft" points="0,-8 148.96,78 51.96,134 -96.99,48"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 0 -8)"><rect x="5" y="5" width="162" height="102" rx="3" class="groove"/><circle cx="10" cy="10" r="1.5" class="screw"/><line x1="9.1" y1="10" x2="10.9" y2="10" class="slot"/><circle cx="162" cy="10" r="1.5" class="screw"/><line x1="161.1" y1="10" x2="162.9" y2="10" class="slot"/><circle cx="10" cy="102" r="1.5" class="screw"/><line x1="9.1" y1="102" x2="10.9" y2="102" class="slot"/><circle cx="162" cy="102" r="1.5" class="screw"/><line x1="161.1" y1="102" x2="162.9" y2="102" class="slot"/></g><g class="" transform="matrix(0.87 0.5 0 1 12.12 112)"><rect x="0" y="1" width="36" height="5" rx="1" class="plate"/><text x="3" y="4.9" class="eng">STAGE 03 · MGR + HR</text></g><g class="bx leg" ><polygon class="fl" points="-12.99,23.5 -8.66,26 -8.66,-8 -12.99,-10.5"/><polygon class="fr" points="-4.33,23.5 -8.66,26 -8.66,-8 -4.33,-10.5"/><polygon class="ft" points="-8.66,-13 -4.33,-10.5 -8.66,-8 -12.99,-10.5"/></g><g class="bx leg" ><polygon class="fl" points="89.2,82.5 93.53,85 93.53,51 89.2,48.5"/><polygon class="fr" points="97.86,82.5 93.53,85 93.53,51 97.86,48.5"/><polygon class="ft" points="93.53,46 97.86,48.5 93.53,51 89.2,48.5"/></g><g class="bx leg" ><polygon class="fl" points="-56.29,48.5 -51.96,51 -51.96,17 -56.29,14.5"/><polygon class="fr" points="-47.63,48.5 -51.96,51 -51.96,17 -47.63,14.5"/><polygon class="ft" points="-51.96,12 -47.63,14.5 -51.96,17 -56.29,14.5"/></g><g class="bx leg" ><polygon class="fl" points="45.9,107.5 50.23,110 50.23,76 45.9,73.5"/><polygon class="fr" points="54.56,107.5 50.23,110 50.23,76 54.56,73.5"/><polygon class="ft" points="50.23,71 54.56,73.5 50.23,76 45.9,73.5"/></g><g class="bx desk" ><polygon class="fl" points="-62.35,14 51.96,80 51.96,76 -62.35,10"/><polygon class="fr" points="105.66,49 51.96,80 51.96,76 105.66,45"/><polygon class="ft" points="-8.66,-21 105.66,45 51.96,76 -62.35,10"/></g><g class="bx paper" ><polygon class="fl" points="-14.72,-7.5 28.58,17.5 28.58,-34.5 -14.72,-59.5"/><polygon class="fr" points="31.18,16 28.58,17.5 28.58,-34.5 31.18,-36"/><polygon class="ft" points="-12.12,-61 31.18,-36 28.58,-34.5 -14.72,-59.5"/></g><g class="" transform="matrix(0.87 0.5 0 1 -14.72 -59.5)"><text x="5" y="9" class="ui-mono acc">HIRING MANAGER</text>
+      <circle cx="43" cy="8" r="4" class="avatar"/>
+      <text x="5" y="20" class="ui-q">How do you handle</text><text x="5" y="26.5" class="ui-q">a quarter you're</text><text x="5" y="33" class="ui-q">behind on?</text><line x1="5" y1="42" x2="34" y2="42" class="rule"/><line x1="5" y1="46" x2="26" y2="46" class="rule"/></g><g class="bx leg" ><polygon class="fl" points="-9.53,-0.5 16.45,14.5 16.45,12.5 -9.53,-2.5"/><polygon class="fr" points="19.92,12.5 16.45,14.5 16.45,12.5 19.92,10.5"/><polygon class="ft" points="-6.06,-4.5 19.92,10.5 16.45,12.5 -9.53,-2.5"/></g><g class="bx paper" ><polygon class="fl" points="38.97,23.5 82.27,48.5 82.27,-3.5 38.97,-28.5"/><polygon class="fr" points="84.87,47 82.27,48.5 82.27,-3.5 84.87,-5"/><polygon class="ft" points="41.57,-30 84.87,-5 82.27,-3.5 38.97,-28.5"/></g><g class="" transform="matrix(0.87 0.5 0 1 38.97 -28.5)"><text x="5" y="9" class="ui-mono acc">HR</text>
+      <circle cx="43" cy="8" r="4" class="avatar"/>
+      <text x="5" y="20" class="ui-q">Why did you leave</text><text x="5" y="26.5" class="ui-q">your last job?</text><text x="5" y="33" class="ui-q"></text><g class="hr-chip"><rect x="5" y="39" width="34" height="8" rx="4" class="flag"/><text x="22" y="44.3" class="ui-mono flag-t mid">ONE WRONG WORD</text></g></g><g class="bx leg" ><polygon class="fl" points="44.17,30.5 70.15,45.5 70.15,43.5 44.17,28.5"/><polygon class="fr" points="73.61,43.5 70.15,45.5 70.15,43.5 73.61,41.5"/><polygon class="ft" points="47.63,26.5 73.61,41.5 70.15,43.5 44.17,28.5"/></g><g class="bx paper" ><polygon class="fl" points="-6.93,30 19.05,45 19.05,17 -6.93,2"/><polygon class="fr" points="27.71,40 19.05,45 19.05,17 27.71,12"/><polygon class="ft" points="1.73,-3 27.71,12 19.05,17 -6.93,2"/></g><g class="" transform="matrix(0.87 0.5 0 1 -6.93 2)"><circle cx="15" cy="14" r="11" class="dial"/><line x1="6.86" y1="18.7" x2="8.59" y2="17.7" class="tk"/><line x1="5.65" y1="14.98" x2="6.84" y2="14.86" class="tk"/><line x1="6.06" y1="11.1" x2="7.2" y2="11.47" class="tk"/><line x1="8.01" y1="7.71" x2="8.91" y2="8.51" class="tk"/><line x1="11.18" y1="5.41" x2="11.66" y2="6.51" class="tk"/><line x1="15" y1="4.6" x2="15" y2="6.6" class="tk"/><line x1="18.82" y1="5.41" x2="18.34" y2="6.51" class="tk"/><line x1="21.99" y1="7.71" x2="21.09" y2="8.51" class="tk"/><line x1="23.94" y1="11.1" x2="22.8" y2="11.47" class="tk"/><line x1="24.35" y1="14.98" x2="23.16" y2="14.86" class="tk"/><line x1="23.14" y1="18.7" x2="21.41" y2="17.7" class="tk"/>
+    <path d="M23.94 11.1 A9.4 9.4 0 0 1 23.14 18.7" class="redzone"/>
+    <g class="needle" transform="rotate(84 15 14)"><line x1="15" y1="14" x2="15" y2="5.6" class="ndl"/></g><circle cx="15" cy="14" r="1.4" class="hub"/>
+    <text x="15" y="25.6" class="ui-mono mid tiny">PRESSURE</text></g></svg></div>
+      </article>
+      <article class="stage right" data-i="3">
+        <div class="stage-copy">
+          <span class="mono step">Stage 04 · VP or CEO</span>
+          <h3>The big picture</h3>
+          <p class="tests"><span class="mono k">Tests</span>Fit with the company's vision.</p>
+          <div class="det">
+            
+            <p><span class="mono k">How EffyX preps you</span>Writes you a brief on the company and your answer to why this company and why this role.</p>
+          </div>
+        </div>
+        <div class="stage-art"><svg class="scene s-ceo" viewBox="-96.07 -22 237.17 158" role="img" aria-labelledby="sc4-t"><title id="sc4-t">A magnifying glass passing over a candidate card on a pedestal</title><g class="bx base" ><polygon class="fl" points="-90.07,52 45.03,130 45.03,122 -90.07,44"/><polygon class="fr" points="135.1,78 45.03,130 45.03,122 135.1,70"/><polygon class="ft" points="0,-8 135.1,70 45.03,122 -90.07,44"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 0 -8)"><rect x="5" y="5" width="146" height="94" rx="3" class="groove"/><circle cx="10" cy="10" r="1.5" class="screw"/><line x1="9.1" y1="10" x2="10.9" y2="10" class="slot"/><circle cx="146" cy="10" r="1.5" class="screw"/><line x1="145.1" y1="10" x2="146.9" y2="10" class="slot"/><circle cx="10" cy="94" r="1.5" class="screw"/><line x1="9.1" y1="94" x2="10.9" y2="94" class="slot"/><circle cx="146" cy="94" r="1.5" class="screw"/><line x1="145.1" y1="94" x2="146.9" y2="94" class="slot"/></g><g class="" transform="matrix(0.87 0.5 0 1 5.2 100)"><rect x="0" y="1" width="36" height="5" rx="1" class="plate"/><text x="3" y="4.9" class="eng">STAGE 04 · CEO</text></g><g class="bx base" ><polygon class="fl" points="-38.11,52 29.44,91 29.44,71 -38.11,32"/><polygon class="fr" points="77.94,63 29.44,91 29.44,71 77.94,43"/><polygon class="ft" points="10.39,4 77.94,43 29.44,71 -38.11,32"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 10.39 4)"><rect x="4" y="4" width="70" height="48" rx="2" class="groove"/></g><g class="bx paper" ><polygon class="fl" points="-25.98,33 27.71,64 27.71,62.6 -25.98,31.6"/><polygon class="fr" points="65.82,42 27.71,64 27.71,62.6 65.82,40.6"/><polygon class="ft" points="12.12,9.6 65.82,40.6 27.71,62.6 -25.98,31.6"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 12.12 9.6)"><text x="5" y="8" class="ui-mono acc">CANDIDATE</text>
+    <rect x="5" y="11" width="26" height="3.6" rx="1" class="bar-dk"/>
+    <line x1="5" y1="20" x2="55" y2="20" class="rule"/><line x1="5" y1="25" x2="48" y2="25" class="rule"/><line x1="5" y1="30" x2="52" y2="30" class="rule"/>
+    <text x="5" y="39" class="ui-q">Why this company?</text></g><g class="mag"><g class="" transform="matrix(0.87 0.5 -0.87 0.5 5.2 25.6)"><ellipse cx="0" cy="0" rx="13" ry="13" class="shadow"/></g><g class="bx dark" ><polygon class="fl" points="13.86,10 39.84,25 39.84,22 13.86,7"/><polygon class="fr" points="43.3,23 39.84,25 39.84,22 43.3,20"/><polygon class="ft" points="17.32,5 43.3,20 39.84,22 13.86,7"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 5.2 0)"><circle r="13" class="lens"/><circle r="11" class="lens-in"/><path d="M-7 -6 A9 9 0 0 1 -1 -9.5" class="glint"/></g></g></svg></div>
+      </article>
+      <article class="stage left" data-i="4">
+        <div class="stage-copy">
+          <span class="mono step">Stage 05 · References</span>
+          <h3>The check</h3>
+          <p class="tests"><span class="mono k">Tests</span>That the numbers you gave check out.</p>
+          <div class="det">
+            <p><span class="mono k bad">Where people fall</span>A claim a reference can't confirm.</p>
+            <p><span class="mono k">How EffyX preps you</span>Never invents experience. What you claim is what your references can confirm.</p>
+          </div>
+        </div>
+        <div class="stage-art"><svg class="scene s-refs" viewBox="-90.87 -24 238.9 161" role="img" aria-labelledby="sc5-t"><title id="sc5-t">Three reference cards on a rail, each confirmed with a check</title><g class="bx base" ><polygon class="fl" points="-84.87,49 57.16,131 57.16,123 -84.87,41"/><polygon class="fr" points="142.03,82 57.16,131 57.16,123 142.03,74"/><polygon class="ft" points="0,-8 142.03,74 57.16,123 -84.87,41"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 0 -8)"><rect x="5" y="5" width="154" height="88" rx="3" class="groove"/><circle cx="10" cy="10" r="1.5" class="screw"/><line x1="9.1" y1="10" x2="10.9" y2="10" class="slot"/><circle cx="154" cy="10" r="1.5" class="screw"/><line x1="153.1" y1="10" x2="154.9" y2="10" class="slot"/><circle cx="10" cy="88" r="1.5" class="screw"/><line x1="9.1" y1="88" x2="10.9" y2="88" class="slot"/><circle cx="154" cy="88" r="1.5" class="screw"/><line x1="153.1" y1="88" x2="154.9" y2="88" class="slot"/></g><g class="" transform="matrix(0.87 0.5 0 1 17.32 101)"><rect x="0" y="1" width="36" height="5" rx="1" class="plate"/><text x="3" y="4.9" class="eng">STAGE 05 · REFS</text></g><g class="bx base" ><polygon class="fl" points="-46.77,33 71.01,101 71.01,96 -46.77,28"/><polygon class="fr" points="84.87,93 71.01,101 71.01,96 84.87,88"/><polygon class="ft" points="-32.91,20 84.87,88 71.01,96 -46.77,28"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 -32.91 20)"><line x1="4" y1="8" x2="132" y2="8" class="groove-l"/></g><g class="bx leg" ><polygon class="fl" points="-27.71,33 -10.39,43 -10.39,41 -27.71,31"/><polygon class="fr" points="-4.33,39.5 -10.39,43 -10.39,41 -4.33,37.5"/><polygon class="ft" points="-21.65,27.5 -4.33,37.5 -10.39,41 -27.71,31"/></g><g class="bx paper" ><polygon class="fl" points="-32.04,27.5 -4.33,43.5 -4.33,-0.5 -32.04,-16.5"/><polygon class="fr" points="-1.73,42 -4.33,43.5 -4.33,-0.5 -1.73,-2"/><polygon class="ft" points="-29.44,-18 -1.73,-2 -4.33,-0.5 -32.04,-16.5"/></g><g class="" transform="matrix(0.87 0.5 0 1 -32.04 -16.5)"><circle cx="16" cy="10" r="5.5" class="avatar"/><text x="16" y="12.1" class="ui-ini">A</text>
+      <line x1="6" y1="21" x2="26" y2="21" class="rule"/><line x1="8" y1="25.5" x2="24" y2="25.5" class="rule"/>
+      <g class="chk c0"><circle cx="16" cy="35" r="4.6" class="chk-c"/><path d="M13.6 35.1 l1.7 1.7 l3 -3.4" class="chk-t"/></g>
+      <text x="16" y="42.4" class="ui-mono mid tiny ink">REF 01</text></g><g class="bx leg" ><polygon class="fl" points="8.66,54 25.98,64 25.98,62 8.66,52"/><polygon class="fr" points="32.04,60.5 25.98,64 25.98,62 32.04,58.5"/><polygon class="ft" points="14.72,48.5 32.04,58.5 25.98,62 8.66,52"/></g><g class="bx paper" ><polygon class="fl" points="4.33,48.5 32.04,64.5 32.04,20.5 4.33,4.5"/><polygon class="fr" points="34.64,63 32.04,64.5 32.04,20.5 34.64,19"/><polygon class="ft" points="6.93,3 34.64,19 32.04,20.5 4.33,4.5"/></g><g class="" transform="matrix(0.87 0.5 0 1 4.33 4.5)"><circle cx="16" cy="10" r="5.5" class="avatar"/><text x="16" y="12.1" class="ui-ini">B</text>
+      <line x1="6" y1="21" x2="26" y2="21" class="rule"/><line x1="8" y1="25.5" x2="24" y2="25.5" class="rule"/>
+      <g class="chk c1"><circle cx="16" cy="35" r="4.6" class="chk-c"/><path d="M13.6 35.1 l1.7 1.7 l3 -3.4" class="chk-t"/></g>
+      <text x="16" y="42.4" class="ui-mono mid tiny ink">REF 02</text></g><g class="bx leg" ><polygon class="fl" points="45.03,75 62.35,85 62.35,83 45.03,73"/><polygon class="fr" points="68.42,81.5 62.35,85 62.35,83 68.42,79.5"/><polygon class="ft" points="51.1,69.5 68.42,79.5 62.35,83 45.03,73"/></g><g class="bx paper" ><polygon class="fl" points="40.7,69.5 68.42,85.5 68.42,41.5 40.7,25.5"/><polygon class="fr" points="71.01,84 68.42,85.5 68.42,41.5 71.01,40"/><polygon class="ft" points="43.3,24 71.01,40 68.42,41.5 40.7,25.5"/></g><g class="" transform="matrix(0.87 0.5 0 1 40.7 25.5)"><circle cx="16" cy="10" r="5.5" class="avatar"/><text x="16" y="12.1" class="ui-ini">C</text>
+      <line x1="6" y1="21" x2="26" y2="21" class="rule"/><line x1="8" y1="25.5" x2="24" y2="25.5" class="rule"/>
+      <g class="chk c2"><circle cx="16" cy="35" r="4.6" class="chk-c"/><path d="M13.6 35.1 l1.7 1.7 l3 -3.4" class="chk-t"/></g>
+      <text x="16" y="42.4" class="ui-mono mid tiny ink">REF 03</text></g></svg></div>
+      </article>
+      <article class="stage right" data-i="5">
+        <div class="stage-copy">
+          <span class="mono step">Stage 06 · Contract</span>
+          <h3>The offer</h3>
+          <p class="tests"><span class="mono k">Tests</span>Negotiation: base, commission and OTE.</p>
+          <div class="det">
+            <p><span class="mono k bad">Where people fall</span>Naming a number first, or accepting without asking.</p>
+            <p><span class="mono k">How EffyX preps you</span>Debriefs every stage with you, then rehearses how to frame the offer conversation.</p>
+          </div>
+        </div>
+        <div class="stage-art"><svg class="scene s-offer" viewBox="-97.8 -14 247.56 156" role="img" aria-labelledby="sc6-t"><title id="sc6-t">An offer letter on a clipboard with a signature being written and a pen beside it</title><g class="bx base" ><polygon class="fl" points="-91.8,53 51.96,136 51.96,128 -91.8,45"/><polygon class="fr" points="143.76,83 51.96,136 51.96,128 143.76,75"/><polygon class="ft" points="0,-8 143.76,75 51.96,128 -91.8,45"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 0 -8)"><rect x="5" y="5" width="156" height="96" rx="3" class="groove"/><circle cx="10" cy="10" r="1.5" class="screw"/><line x1="9.1" y1="10" x2="10.9" y2="10" class="slot"/><circle cx="156" cy="10" r="1.5" class="screw"/><line x1="155.1" y1="10" x2="156.9" y2="10" class="slot"/><circle cx="10" cy="96" r="1.5" class="screw"/><line x1="9.1" y1="96" x2="10.9" y2="96" class="slot"/><circle cx="156" cy="96" r="1.5" class="screw"/><line x1="155.1" y1="96" x2="156.9" y2="96" class="slot"/></g><g class="" transform="matrix(0.87 0.5 0 1 12.12 106)"><rect x="0" y="1" width="36" height="5" rx="1" class="plate"/><text x="3" y="4.9" class="eng">STAGE 06 · OFFER</text></g><g class="bx board" ><polygon class="fl" points="-53.69,55 29.44,103 29.44,100 -53.69,52"/><polygon class="fr" points="93.53,66 29.44,103 29.44,100 93.53,63"/><polygon class="ft" points="10.39,15 93.53,63 29.44,100 -53.69,52"/></g><g class="bx paper" ><polygon class="fl" points="-39.84,54 25.98,92 25.98,91.2 -39.84,53.2"/><polygon class="fr" points="79.67,61 25.98,92 25.98,91.2 79.67,60.2"/><polygon class="ft" points="13.86,22.2 79.67,60.2 25.98,91.2 -39.84,53.2"/></g><g class="" transform="matrix(0.87 0.5 -0.87 0.5 13.86 22.2)"><text x="6" y="9" class="ui-h ink">Offer letter</text>
+    <text x="6" y="19" class="ui-mono ink">BASE</text><rect x="30" y="16.4" width="30" height="3.2" rx="1" class="bar"/><text x="6" y="26" class="ui-mono ink">COMMISSION</text><rect x="30" y="23.4" width="24" height="3.2" rx="1" class="bar"/><text x="6" y="33" class="ui-mono ink">OTE</text><rect x="30" y="30.4" width="18" height="3.2" rx="1" class="bar"/>
+    <line x1="34" y1="52" x2="70" y2="52" class="rule-dk"/>
+    <path d="M36 50 c3 -6 5 -6 4 -1 c-1 4 3 -5 6 -4 c2 1 -1 5 2 4 c3 -1 4 -4 6 -3 c2 1 0 3 3 2 c2 -1 5 -2 8 -1" class="sig"/>
+    <text x="34" y="56.6" class="ui-mono tiny ink">SIGN HERE</text></g><g class="bx dark" ><polygon class="fl" points="35.51,34.5 59.76,48.5 59.76,42.5 35.51,28.5"/><polygon class="fr" points="66.68,44.5 59.76,48.5 59.76,42.5 66.68,38.5"/><polygon class="ft" points="42.44,24.5 66.68,38.5 59.76,42.5 35.51,28.5"/></g><g class="bx cob" ><polygon class="fl" points="11.69,79.25 48.06,100.25 48.06,95.75 11.69,74.75"/><polygon class="fr" points="51.96,98 48.06,100.25 48.06,95.75 51.96,93.5"/><polygon class="ft" points="15.59,72.5 51.96,93.5 48.06,95.75 11.69,74.75"/></g><g class="bx dark" ><polygon class="fl" points="48.58,99.35 53.78,102.35 53.78,99.05 48.58,96.05"/><polygon class="fr" points="56.64,100.7 53.78,102.35 53.78,99.05 56.64,97.4"/><polygon class="ft" points="51.44,94.4 56.64,97.4 53.78,99.05 48.58,96.05"/></g><g class="bx cob" ><polygon class="fl" points="81.41,81 102.19,93 102.19,84 81.41,72"/><polygon class="fr" points="112.58,87 102.19,93 102.19,84 112.58,78"/><polygon class="ft" points="91.8,66 112.58,78 102.19,84 81.41,72"/></g><g class="" transform="matrix(0.87 0.5 0 1 81.41 72)"><text x="12" y="6.2" class="ui-mono inv mid">OFFER</text></g></svg></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="filter" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <h2><span class="thin">One wrong word</span> <span class="bold">ends the call.</span></h2>
+      <p>Field sales talk sounds great on the floor and wrong in a high-tech HR interview. Pick a question and see how EffyX rewrites your answer.</p>
+    </div>
+    <div class="filter">
+      <div class="qs" role="group" aria-label="Interview questions">
+        <button type="button" data-q="0" aria-pressed="true"><small>Recruiter screen</small>Why do you want to move into high-tech?</button>
+        <button type="button" data-q="1" aria-pressed="false"><small>HR interview</small>Why did you leave your last job?</button>
+        <button type="button" data-q="2" aria-pressed="false"><small>Hiring manager</small>How do you handle a quarter you're behind on?</button>
       </div>
-      <div class="copy">
-        <span>© 2026 EffyX. All rights reserved.</span>
-        <span>Made for sellers who close.</span>
+      <div class="screen-card">
+        <div class="screen-bar">
+          <span class="mono">Example answer · <b id="stageName" style="color:var(--ink)">Recruiter screen</b></span>
+          <div class="toggle" role="group" aria-label="Answer version">
+            <button type="button" id="tBefore" aria-pressed="true">Your draft</button>
+            <button type="button" id="tAfter" class="after" aria-pressed="false">With EffyX</button>
+          </div>
+        </div>
+        <div class="answer" aria-live="polite">
+          <blockquote id="ansText"></blockquote>
+          <div class="score"><span>HR risk</span><div class="bar"><i id="scoreBar"></i></div><span id="scoreVal"></span></div>
+          <div class="flags" id="flags"></div>
+        </div>
       </div>
     </div>
-  </footer>
+  </div>
+</section>
+
+<section class="block" id="pipeline" style="padding-top:0">
+  <div class="wrap split">
+    <div>
+      <div class="mono">Your personal area</div>
+      <h2><span class="thin">Every application,</span> <span class="bold">in one place.</span></h2>
+      <p>Your CV versions, interview notes, prep briefs and feedback are saved in your personal area. The agent remembers every stage, so you never start from zero.</p>
+      <a href="#join" class="btn btn-ghost" style="margin-top:10px">Open my area <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="pipe" role="table" aria-label="Example application pipeline">
+      <div class="pipe-top"><span class="mono">Pipeline · Example data</span><span style="display:flex;align-items:baseline;gap:8px"><span class="stat">4</span><span class="mono">active</span></span></div>
+      <div class="row" role="row"><div role="cell"><strong>SDR Team Lead</strong><span class="sub">Cybersecurity scale-up · Tel Aviv</span></div><span class="pill p-live" role="cell">2nd interview · Sun</span></div>
+      <div class="row" role="row"><div role="cell"><strong>Account Executive, EMEA</strong><span class="sub">Series B SaaS · Herzliya</span></div><span class="pill p-prep" role="cell">Prep brief ready</span></div>
+      <div class="row" role="row"><div role="cell"><strong>Business Development Rep</strong><span class="sub">Fintech · Ramat Gan</span></div><span class="pill p-wait" role="cell">Waiting on recruiter</span></div>
+      <div class="row" role="row"><div role="cell"><strong>Inside Sales Manager</strong><span class="sub">Martech · Remote</span></div><span class="pill p-offer" role="cell">Offer stage</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="who" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <h2><span class="thin">Built for people who</span> <span class="bold">already sell.</span></h2>
+      <p>EffyX proves you can get hired on your own merit, not only through who you know.</p>
+    </div>
+    <div class="who">
+      <div><span class="from">from</span><h3>Field sales</h3><p>You close face to face. We turn that into a story about pipeline, quota and process.</p></div>
+      <div><span class="from">from</span><h3>Insurance agents</h3><p>Years of objection handling and trust-building, framed in the language of SaaS.</p></div>
+      <div><span class="from">from</span><h3>Course sellers</h3><p>High-volume, high-intent calls. Exactly what an SDR team wants to hear about.</p></div>
+      <div><span class="from">from</span><h3>SDRs</h3><p>You're in, and you want the next level: team lead, AE or a better company.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <h2><span class="thin">Straight</span> <span class="bold">answers.</span></h2>
+      <p>What people ask before they start.</p>
+    </div>
+    <div class="faq">
+      <div><h3>Is it a person or AI?</h3><p>AI. One agent that knows your history and adapts to your strengths and weak spots. No human coach.</p></div>
+      <div><h3>Why not just use ChatGPT?</h3><p>EffyX does one thing: getting salespeople hired in high-tech. It knows the stages, the language recruiters look for, and the answers that get you filtered out.</p></div>
+      <div><h3>Does it help me during the interview?</h3><p>No. It builds the preparation and the structure around every interview, so you walk in ready on your own.</p></div>
+      <div><h3>What happens to my CV?</h3><p>The agent reads it, fixes it and gets it ready to send. Every change is saved, so you can see what changed and edit it yourself.</p></div>
+      <div><h3>Is it only for sales?</h3><p>Yes, on purpose. EffyX is built for people who want to win in sales: SDR, account executive, account manager and sales leadership. Everything it knows is about how high-tech hires salespeople.</p></div>
+      <div><h3>What does it cost?</h3><p>The pilot is free.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="join" style="padding-top:0">
+  <div class="wrap">
+    <div class="final">
+      <div class="mono">Pilot cohort</div><span class="stat">100</span><div class="mono" style="margin-top:10px">seats</div>
+      <h2><span class="thin">Your next interview</span> <span class="bold">starts prepared.</span></h2>
+      <p>Answer six questions, paste your CV, and get your CV back in high-tech sales language within minutes.</p>
+      <div class="cta-row"><a href="agent.html" class="btn btn-cob">Start with the agent <span aria-hidden="true">→</span></a></div>
+      <div class="ok-msg">Pilot seats are by invitation for now.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="#top" class="logo" style="font-size:16px"><i></i><span><span>Effy</span><b>X</b></span></a>
+    <span>AI career agent for sales professionals entering high-tech.</span>
+    <span class="mono">© 2026 EffyX.io</span>
+  </div>
+</footer>
+<div class="mcta"><a href="agent.html" class="btn btn-cob">Join the pilot <span aria-hidden="true">→</span></a></div>
 
 <script>
+const data=[
+ {stage:"Recruiter screen",
+  before:'Honestly, I\'m <mark class="bad">tired of field work</mark> and high-tech <mark class="bad">pays better</mark>. I can <mark class="bad">sell anything to anyone</mark>.',
+  after:'I\'ve spent five years closing <mark class="good">face-to-face deals</mark> and I want to apply that in a <mark class="good">repeatable SaaS sales process</mark>, where pipeline and data drive the work.',
+  fb:[["Negative framing","\"Tired of\" tells HR you're running away, not moving toward something."],["Money first","Leading with salary reads as a flight risk."],["Empty claim","\"Sell anything\" has no proof. Recruiters want numbers and process."]],
+  fa:[["Motivation","Ties your past to their model."],["Their words","\"Pipeline\" and \"process\" match what the recruiter scans for."]],rb:82,ra:14},
+ {stage:"HR interview",
+  before:'My <mark class="bad">manager didn\'t appreciate me</mark> and the company <mark class="bad">was a mess</mark>, so I <mark class="bad">just quit</mark>.',
+  after:'I hit my targets for <mark class="good">six straight quarters</mark> and reached the ceiling of the role. I\'m looking for a team where I can <mark class="good">grow into leadership</mark>.',
+  fb:[["Blaming","Criticizing a past manager is the most common reason HR rejects."],["Impulsive","\"Just quit\" suggests you'll do it again."]],
+  fa:[["Proof","Results first, then the reason to move."],["Forward-looking","Growth is a reason HR can accept and repeat."]],rb:91,ra:9},
+ {stage:"Hiring manager",
+  before:'I <mark class="bad">push harder</mark> and <mark class="bad">call everyone</mark> until it works. <mark class="bad">I always make it</mark> in the end.',
+  after:'I go back to the <mark class="good">pipeline by stage</mark>, find where deals stall, and focus the last weeks on the <mark class="good">highest-probability deals</mark>. Then I tell my manager early.',
+  fb:[["No method","Effort alone sounds like you don't diagnose."],["Overclaim","\"Always\" invites a hard follow-up question."]],
+  fa:[["Structured","Shows you read the funnel like a manager."],["Transparency","Raising it early signals you're coachable."]],rb:64,ra:12}
+];
+let q=0,after=false;
+const $=id=>document.getElementById(id);
+function render(){
+  const d=data[q];
+  $("stageName").textContent=d.stage;
+  $("ansText").innerHTML=after?d.after:d.before;
+  const r=after?d.ra:d.rb;
+  $("scoreBar").style.width=r+"%";
+  $("scoreBar").style.background=after?"var(--aqua)":"var(--phosphor)";
+  $("scoreVal").textContent=r+"/100";
+  $("flags").innerHTML=(after?d.fa:d.fb).map(f=>'<div class="flag-row '+(after?'ok':'')+'"><span class="chip">'+(after?'✓':'!')+' '+f[0]+'</span><span>'+f[1]+'</span></div>').join("");
+  $("tBefore").setAttribute("aria-pressed",!after);$("tAfter").setAttribute("aria-pressed",after);
+  document.querySelectorAll(".qs button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.q===q));
+}
+document.querySelectorAll(".qs button").forEach(b=>b.addEventListener("click",()=>{q=+b.dataset.q;after=false;render()}));
+$("tBefore").onclick=()=>{after=false;render()};
+$("tAfter").onclick=()=>{after=true;render()};
+render();
+
+document.querySelectorAll(".more").forEach(b=>b.addEventListener("click",()=>{
+  const open=b.getAttribute("aria-expanded")!=="true";
+  b.setAttribute("aria-expanded",open);document.getElementById(b.getAttribute("aria-controls")).hidden=!open;
+  b.closest(".stage").classList.toggle("on",open);
+  window.ScrollTrigger&&ScrollTrigger.refresh();
+}));
+
+/* connectors between the stage cards: routed lines with rounded corners and nodes */
+const NS="http://www.w3.org/2000/svg";
+function route(x1,y1,x2,y2){
+  const my=(y1+y2)/2,r=Math.min(18,Math.abs(x2-x1)/2,(y2-y1)/4);
+  if(Math.abs(x2-x1)<1)return "M"+x1+" "+y1+" V"+y2;
+  const d=x2>x1?1:-1;
+  return "M"+x1+" "+y1+" V"+(my-r)+" Q"+x1+" "+my+" "+(x1+d*r)+" "+my+" H"+(x2-d*r)+" Q"+x2+" "+my+" "+x2+" "+(my+r)+" V"+y2;
+}
+function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e}
+function buildWires(){
+  const track=$("track"),svg=$("wires"),cards=[...track.querySelectorAll(".stage")],T=track.getBoundingClientRect();
+  svg.innerHTML="";const narrow=innerWidth<=760,out=[];
+  for(let i=0;i<cards.length-1;i++){
+    const a=cards[i].getBoundingClientRect(),b=cards[i+1].getBoundingClientRect();
+    let x1,x2;
+    if(narrow){x1=x2=8}
+    else{x1=(i%2?a.left+a.width*.32:a.left+a.width*.68)-T.left;x2=(i%2?b.left+b.width*.3:b.left+b.width*.7)-T.left}
+    const y1=a.bottom-T.top,y2=b.top-T.top;
+    if(narrow){x1=x2=12}
+    const d=route(Math.round(x1),Math.round(y1),Math.round(x2),Math.round(y2));
+    svg.append(el("path",{d,class:"wire-bed"}));
+    const w=el("path",{d,class:"wire"});svg.append(w);
+    [[x1,y1],[x2,y2]].forEach(([x,y],k)=>{const g=el("g",{class:"nd n"+k});g.append(el("circle",{cx:x,cy:y,r:6,class:"node"}),el("circle",{cx:x,cy:y,r:2.5,class:"node-dot"}));svg.append(g)});
+    out.push(w);
+  }
+  return out;
+}
+let wires=buildWires();
+
+/* the particle orb behind the hero: a slowly turning sphere of teal and white points with a pink rim */
 (function(){
-  "use strict";
-
-  // ----- nav scroll state -----
-  var nav = document.getElementById('nav');
-  function onScroll(){ if(window.scrollY > 24){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } }
-  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
-
-  // ----- pricing component -----
-  // Edit this array to change tiers, prices, or copy — the markup renders from this data.
-  // Tiers are cumulative: Gold/Diamond carry an "includes" line crediting the tier(s) below.
-  var PRICING_TIERS = [
-    {
-      name: 'Silver',
-      price: 10,
-      blurb: 'Hands-off applying, every role, every week — on autopilot.',
-      features: [
-        'Auto-applies to roles for you after a short questionnaire',
-        'Weekly summary of every application it sent on your behalf'
-      ],
-      cta: 'Start with Silver',
-      featured: false
-    },
-    {
-      name: 'Gold',
-      price: 25,
-      badge: 'Most popular',
-      includes: 'Everything in Silver, plus:',
-      blurb: 'Full visibility, real leverage, and a straight line to the person who can say yes.',
-      features: [
-        'Real-time updates the moment any process moves',
-        'Negotiation support — surfaces leverage and loopholes you don\'t have time to find',
-        'Decision-Maker Discovery — one click to the hiring manager\'s verified work email + LinkedIn'
-      ],
-      cta: 'Go Gold →',
-      featured: true
-    },
-    {
-      name: 'Diamond',
-      price: 35,
-      includes: 'Everything in Silver &amp; Gold, plus:',
-      blurb: 'Walk in already proven, and already memorable.',
-      features: [
-        'Sales Methodology Score — a verified SPIN / Challenger benchmark that tells recruiters you need zero ramp-up',
-        'Live Pitch Recorder — record a 60-second pitch in-platform and share it with hiring managers on LinkedIn'
-      ],
-      cta: 'Go Diamond',
-      featured: false
+  const cv=document.getElementById("orb");if(!cv)return;
+  const ctx=cv.getContext("2d"),N=1500,pts=[],still=matchMedia("(prefers-reduced-motion: reduce)");
+  const ga=Math.PI*(3-Math.sqrt(5));
+  for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(1-y*y),t=ga*i;pts.push([Math.cos(t)*r,y,Math.sin(t)*r])}
+  let W=0,H=0,dpr=1,a=0.6,raf=0,on=true;
+  function size(){dpr=Math.min(2,devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const R=Math.min(W*.46,H*.52),cx=W/2,cy=H*.5,ca=Math.cos(a),sa=Math.sin(a),tl=.38,ct=Math.cos(tl),st=Math.sin(tl);
+    for(const p of pts){
+      let x=p[0]*ca+p[2]*sa,z=-p[0]*sa+p[2]*ca,y=p[1];
+      const y2=y*ct-z*st;z=y*st+z*ct;y=y2;
+      const d=(z+1)/2,rim=1-Math.abs(z);
+      const sx=cx+x*R,sy=cy+y*R,s=.7+d*1.8;
+      let col;
+      if(rim>.82&&x>0)col="250,209,255";else if(d>.6)col="237,255,254";else col="0,180,170";
+      ctx.fillStyle="rgba("+col+","+(.2+d*.75).toFixed(3)+")";
+      ctx.fillRect(sx,sy,s,s);
     }
-  ];
-
-  function renderPricing(tiers){
-    var grid = document.querySelector('[data-pricing-grid]');
-    if(!grid){ return; }
-    grid.innerHTML = tiers.map(function(tier){
-      var badge = tier.badge ? '<span class="tier-badge">' + tier.badge + '</span>' : '';
-      var includes = tier.includes ? '<p class="tier-includes">' + tier.includes + '</p>' : '';
-      var features = tier.features.map(function(f){ return '<li>' + f + '</li>'; }).join('');
-      var btnClass = tier.featured ? 'btn-primary' : 'btn-ghost';
-      return (
-        '<div class="tier-card reveal' + (tier.featured ? ' featured' : '') + '">' +
-          badge +
-          '<div class="tier-head">' +
-            '<h3>' + tier.name + '</h3>' +
-            '<div class="tier-price"><span class="amount">$' + tier.price + '</span><span class="period">/mo</span></div>' +
-          '</div>' +
-          '<p class="tier-blurb">' + tier.blurb + '</p>' +
-          includes +
-          '<ul class="tier-features">' + features + '</ul>' +
-          '<a class="btn ' + btnClass + ' tier-cta" href="#access">' + tier.cta + '</a>' +
-        '</div>'
-      );
-    }).join('');
   }
-
-  renderPricing(PRICING_TIERS);
-
-  // ----- reveal on scroll -----
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var reveals = document.querySelectorAll('.reveal');
-  if(reduce || !('IntersectionObserver' in window)){
-    reveals.forEach(function(el){ el.classList.add('in'); });
-  } else {
-    var obs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
-    }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
-    reveals.forEach(function(el){ obs.observe(el); });
+  function tick(){a+=.0016;draw();raf=on?requestAnimationFrame(tick):0}
+  size();addEventListener("resize",size);
+  if(!still.matches){
+    new IntersectionObserver(e=>{on=e[0].isIntersecting;if(on&&!raf)raf=requestAnimationFrame(tick)}).observe(cv);
   }
+})();
 
-  // ----- waitlist storage (window.storage with graceful fallback) -----
-  var TOTAL = 100;
-  var COUNT_KEY = 'effyx:waitlist:count';
-  var SELF_KEY  = 'effyx:waitlist:self';
-  var mem = {};
-  var hasStore = (typeof window !== 'undefined') && !!window.storage;
-
-  async function sget(key, shared){
-    if(hasStore){
-      try{ var r = await window.storage.get(key, !!shared); return (r && typeof r.value !== 'undefined') ? r.value : null; }
-      catch(e){ return null; }
-    }
-    return (key in mem) ? mem[key] : null;
-  }
-  async function sset(key, value, shared){
-    if(hasStore){
-      try{ await window.storage.set(key, value, !!shared); return true; }
-      catch(e){ return false; }
-    }
-    mem[key] = value; return true;
-  }
-
-  var joined = false;
-  var emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-  function paintSeats(count){
-    var claimed = Math.min(count, TOTAL);
-    var remaining = Math.max(0, TOTAL - count);
-    document.querySelectorAll('[data-claimed]').forEach(function(el){ el.textContent = claimed; });
-    document.querySelectorAll('[data-seats]').forEach(function(el){ el.textContent = remaining; });
-    var pct = Math.min(100, Math.round((claimed / TOTAL) * 100));
-    document.querySelectorAll('[data-bar]').forEach(function(el){ el.style.width = pct + '%'; });
-  }
-
-  function showJoined(email){
-    document.querySelectorAll('[data-cta]').forEach(function(cta){
-      var f = cta.querySelector('.cta-form');
-      var j = cta.querySelector('.cta-joined');
-      if(f){ f.style.display = 'none'; }
-      if(j){
-        j.style.display = 'flex';
-        var em = j.querySelector('[data-email]');
-        if(em && email){ em.textContent = email; }
-      }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+(function(){
+  const show=()=>document.querySelectorAll(".gs-words").forEach(e=>e.style.visibility="visible");
+  let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(()=>{wires=buildWires();if(window.ScrollTrigger){mmRebuild&&mmRebuild()}},200)});
+  let mmRebuild=null;
+  if(!window.gsap||!window.SplitText||!window.ScrollTrigger){show();return}
+  gsap.registerPlugin(SplitText,ScrollTrigger);
+  const mm=gsap.matchMedia();
+  mm.add("(prefers-reduced-motion: reduce)",show);
+  mm.add("(prefers-reduced-motion: no-preference)",()=>{
+    const soft="power3.out";
+    document.fonts.ready.then(()=>{
+      // hero headline: word by word, each word rises from below its own mask
+      SplitText.create(".hero h1.gs-words",{type:"words",mask:"words",onSplit(self){
+        gsap.set(self.elements,{visibility:"visible"});
+        return gsap.from(self.words,{yPercent:110,duration:.9,ease:soft,stagger:.07,delay:.15});
+      }});
     });
-  }
 
-  async function refresh(){
-    var count = parseInt((await sget(COUNT_KEY, true)) || '0', 10);
-    if(isNaN(count)){ count = 0; }
-    paintSeats(count);
-    var selfRaw = await sget(SELF_KEY, false);
-    if(selfRaw){
-      joined = true;
-      var email = '';
-      try{ email = (JSON.parse(selfRaw).email) || ''; }catch(e){}
-      showJoined(email);
+    // the line draws itself between stations as you scroll
+    const lineTweens=[];
+    function bindWires(){
+      lineTweens.forEach(t=>{t.scrollTrigger&&t.scrollTrigger.kill();t.kill()});lineTweens.length=0;
+      wires.forEach(w=>{
+        const L=w.getTotalLength();gsap.set(w,{strokeDasharray:L,strokeDashoffset:L});
+        lineTweens.push(gsap.to(w,{strokeDashoffset:0,ease:"none",scrollTrigger:{trigger:w,start:"top 78%",end:"bottom 58%",scrub:.6}}));
+      });
     }
-  }
+    bindWires();mmRebuild=()=>{bindWires();ScrollTrigger.refresh()};
 
-  async function handleSubmit(form, e){
-    e.preventDefault();
-    var input = form.querySelector('input[type="email"]');
-    var errEl = form.querySelector('[data-error]');
-    var btn = form.querySelector('button[type="submit"]');
-    var email = (input.value || '').trim();
-
-    if(!emailRx.test(email)){
-      if(errEl){ errEl.textContent = 'Please enter a valid email address.'; }
-      input.focus();
-      return;
-    }
-    if(errEl){ errEl.textContent = ''; }
-
-    var label = btn ? btn.textContent : '';
-    if(btn){ btn.disabled = true; btn.textContent = 'Reserving…'; btn.style.opacity = '0.7'; }
-
-    await sset(SELF_KEY, JSON.stringify({ email: email, ts: Date.now() }), false);
-    if(!joined){
-      var count = parseInt((await sget(COUNT_KEY, true)) || '0', 10);
-      if(isNaN(count)){ count = 0; }
-      count += 1;
-      await sset(COUNT_KEY, String(count), true);
-      joined = true;
-    }
-
-    if(btn){ btn.disabled = false; btn.textContent = label; btn.style.opacity = '1'; }
-
-    await refresh();
-    showJoined(email);
-  }
-
-  document.querySelectorAll('.cta-form').forEach(function(form){
-    form.addEventListener('submit', function(e){ handleSubmit(form, e); });
+    // each station starts moving once it is really on screen
+    const sc=s=>document.querySelector(s);
+    const mmss=n=>String(Math.floor(n/60)).padStart(2,"0")+":"+String(Math.floor(n%60)).padStart(2,"0");
+    function clock(sel,from,to,dur){const e=sc(sel),o={v:from};e.textContent=mmss(from);
+      return gsap.to(o,{v:to,duration:dur,ease:"none",onUpdate:()=>e.textContent=mmss(o.v)})}
+    const stations=[
+      ()=>gsap.timeline().from(".s-phone .bub",{y:4,autoAlpha:0,duration:.55,ease:soft,stagger:.45})
+          .add(clock("[data-clock]",0,134,2.2),0),
+      ()=>gsap.timeline().from(".s-task .tick",{autoAlpha:0,scale:.3,transformOrigin:"50% 50%",duration:.4,ease:"back.out(2)",stagger:.5},.3)
+          .add(clock("[data-timer]",2879+120,2879,2.2),0),
+      ()=>(()=>{const n=sc(".s-mgr .needle"),o={a:-110};const set=()=>n.setAttribute("transform","rotate("+o.a.toFixed(1)+" 15 14)");set();return gsap.timeline().to(o,{a:84,duration:1.6,ease:"back.out(1.4)",onUpdate:set})})()
+          .from(".s-mgr .hr-chip",{autoAlpha:0,y:2,duration:.5,ease:soft},.6),
+      ()=>gsap.timeline().from(".s-ceo .mag",{x:-34,y:-8,duration:1.6,ease:"power2.inOut"}),
+      ()=>gsap.timeline().from(".s-refs .chk",{autoAlpha:0,scale:.4,transformOrigin:"50% 50%",duration:.45,ease:"back.out(2)",stagger:.4},.2),
+      ()=>{const p=sc(".s-offer .sig"),L=p.getTotalLength();gsap.set(p,{strokeDasharray:L});return gsap.timeline().from(p,{strokeDashoffset:L,duration:1.6,ease:"power1.inOut"},.2)}
+    ];
+    document.querySelectorAll(".stage").forEach((card,i)=>{
+      const tl=stations[i]();tl.pause(0);
+      ScrollTrigger.create({trigger:card,start:"top 70%",once:true,onEnter:()=>tl.play()});
+    });
+    return ()=>{lineTweens.forEach(t=>t.kill());mmRebuild=null};
   });
-
-  refresh();
 })();
 </script>
-</body>
-</html>
+
+</body></html>

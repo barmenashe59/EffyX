@@ -1,0 +1,137 @@
+<!-- Starting template — have this reviewed before relying on it for real signups. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Privacy Policy — EffyX</title>
+<meta name="description" content="How EffyX collects, stores, and uses information from the early-access waitlist." />
+<meta name="theme-color" content="#0a0908" />
+<link rel="canonical" href="https://effyx.com/privacy.html" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0908; --bg-2:#0f0e0c; --surface:#141210; --surface-2:#1b1814;
+    --bone:#F3EEE3; --bone-dim:#CBC4B6; --muted:#8E877B;
+    --faint:rgba(243,238,227,0.09); --faint-2:rgba(243,238,227,0.14);
+    --gold:#D8B26A; --gold-bright:#EAC987; --gold-deep:#B8924A;
+    --green:#9FCB8B; --blue:#8FB7D6;
+    --radius:9px; --maxw:1180px;
+    --serif:'Instrument Serif', Georgia, serif;
+    --sans:'Hanken Grotesk', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+  body{ font-family:var(--sans); background:var(--bg); color:var(--bone); line-height:1.6; font-weight:400; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  ::selection{ background:var(--gold); color:#1a1206; }
+
+  .bg-glow{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(900px 540px at 80% -8%, rgba(216,178,106,0.14), transparent 60%),
+      radial-gradient(900px 700px at 8% 100%, rgba(143,183,214,0.06), transparent 60%);
+  }
+  .grain{
+    position:fixed; inset:-50%; z-index:1; pointer-events:none; opacity:0.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+  }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 28px; position:relative; z-index:2; }
+
+  nav{ border-bottom:1px solid var(--faint); position:relative; z-index:2; }
+  .nav-inner{ max-width:var(--maxw); margin:0 auto; padding:18px 28px; display:flex; align-items:center; justify-content:space-between; }
+  .brand{ font-family:var(--serif); font-size:1.55rem; letter-spacing:0.01em; color:var(--bone); display:inline-flex; align-items:baseline; gap:2px; text-decoration:none; }
+  .brand .dot{ color:var(--gold); font-size:0.9em; }
+  .back{ font-family:var(--mono); font-size:0.76rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--bone-dim); text-decoration:none; transition:color .2s; }
+  .back:hover{ color:var(--gold); }
+
+  main{ padding:64px 0 96px; position:relative; z-index:2; }
+  .legal h1{ font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.4rem); margin-bottom:10px; }
+  .legal .updated{ display:block; font-family:var(--mono); font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:44px; }
+  .legal h2{ font-family:var(--serif); font-weight:400; font-size:1.5rem; margin:40px 0 14px; color:var(--bone); }
+  .legal p, .legal li{ color:var(--bone-dim); font-weight:300; max-width:68ch; }
+  .legal p{ margin-bottom:14px; }
+  .legal ul{ padding-left:1.3em; margin-bottom:14px; }
+  .legal li{ margin-bottom:8px; }
+  .legal strong{ color:var(--bone); font-weight:600; }
+  .legal a{ color:var(--gold); text-decoration-color:var(--faint-2); }
+  .legal a:hover{ text-decoration-color:var(--gold); }
+
+  footer{ border-top:1px solid var(--faint); padding:28px 0; position:relative; z-index:2; }
+  .foot-inner{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-family:var(--mono); font-size:0.72rem; letter-spacing:0.06em; color:var(--muted); }
+  .foot-inner a{ color:var(--muted); text-decoration:none; }
+  .foot-inner a:hover{ color:var(--gold); }
+  .foot-inner .links{ display:flex; gap:24px; }
+
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; border-radius:4px; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="bg-glow" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="brand">EffyX<span class="dot">.</span></a>
+    <a href="/" class="back">← Back to EffyX</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <article class="legal">
+    <h1>Privacy Policy</h1>
+    <span class="updated">Last updated · June 2026</span>
+
+    <p>EffyX ("we", "us") is currently in early access. This page explains what information we collect through this waitlist site, and how it's used.</p>
+
+    <h2>What we collect</h2>
+    <ul>
+      <li><strong>Information you provide:</strong> your name, email address, and role, when you request access.</li>
+      <li><strong>Resume content:</strong> if you use the resume-review tool, the resume you upload (PDF or text) and the role you select.</li>
+      <li><strong>Usage data:</strong> if analytics is enabled, anonymous, aggregated page-view data (e.g. via Plausible, which is cookie-free and doesn't track you across other sites).</li>
+    </ul>
+
+    <h2>How we use it</h2>
+    <ul>
+      <li>To notify you when early access opens.</li>
+      <li>To understand demand by role, so we prioritize the right capabilities first.</li>
+      <li>To generate your resume review, and to contact you about EffyX.</li>
+    </ul>
+
+    <h2>Where it's stored</h2>
+    <p>Your name, email, and role are stored in a private Google Sheet via a Google Apps Script integration. We don't sell, rent, or share your information with third parties for marketing.</p>
+
+    <h2>Resume review &amp; AI processing</h2>
+    <p>When you use the resume-review tool, the resume you upload (PDF or text) and the email and role you provide are sent to our AI provider, <a href="https://www.anthropic.com/" rel="noopener">Anthropic</a> (Claude), which generates your review. We use this content only to produce your review and to contact you about EffyX — we don't sell it, and Anthropic does not train its models on data submitted through its API. We don't keep a copy of the uploaded file after your review is generated; your name, email, and role are kept as described above.</p>
+
+    <h2>Your choices</h2>
+    <p>You can ask us to remove your information at any time by emailing <a href="mailto:barmenashe59@gmail.com">barmenashe59@gmail.com</a>. We'll action requests promptly.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>We may update this policy as EffyX moves from waitlist to product. Material changes will be reflected with a new "last updated" date above.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this policy? Email <a href="mailto:barmenashe59@gmail.com">barmenashe59@gmail.com</a>.</p>
+  </article>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <span>© 2026 EffyX. All rights reserved.</span>
+    <div class="links">
+      <a href="/">Home</a>
+      <a href="/terms.html">Terms</a>
+      <a href="mailto:barmenashe59@gmail.com">Contact</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

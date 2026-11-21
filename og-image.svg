@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="EffyX — AI career agent for high-tech sales">
+  <defs>
+    <radialGradient id="glow1" cx="82%" cy="6%" r="65%">
+      <stop offset="0%" stop-color="#D8B26A" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#D8B26A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="6%" cy="100%" r="65%">
+      <stop offset="0%" stop-color="#8FB7D6" stop-opacity="0.14"/>
+      <stop offset="60%" stop-color="#8FB7D6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow3" cx="60%" cy="100%" r="55%">
+      <stop offset="0%" stop-color="#9FCB8B" stop-opacity="0.08"/>
+      <stop offset="60%" stop-color="#9FCB8B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#0a0908"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow3)"/>
+
+  <circle cx="84" cy="138" r="4" fill="#D8B26A"/>
+  <text x="100" y="143" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="15" letter-spacing="4" font-weight="600" fill="#D8B26A">EARLY ACCESS · BUILT FOR HIGH-TECH SELLERS</text>
+
+  <text x="78" y="300" font-family="Georgia, 'Times New Roman', serif" font-size="128" fill="#F3EEE3">EffyX<tspan fill="#D8B26A">.</tspan></text>
+
+  <text x="80" y="372" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-style="italic" fill="#EAC987">Run your job search like a pipeline.</text>
+
+  <text x="80" y="424" font-family="Helvetica, Arial, sans-serif" font-size="23" fill="#CBC4B6">AI career agent for high-tech sales — built for AEs, RVPs, and SDR leaders.</text>
+
+  <line x1="80" y1="512" x2="1120" y2="512" stroke="rgba(243,238,227,0.14)" stroke-width="1"/>
+  <text x="80" y="550" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="15" letter-spacing="5" font-weight="500" fill="#8E877B">SOURCED  →  TAILORED  →  SENT  →  TRACKED</text>
+</svg>

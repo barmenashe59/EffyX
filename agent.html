@@ -1,0 +1,585 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<title>EffyX Agent</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
+<style>
+/* Layout: the candidate's workspace. A slim top bar, then one focused panel at a time: onboarding steps, or the workspace tabs (Today, CV, Stories, Stages). Single dark theme, same teal surface stack as the EffyX site. */
+:root{
+  --abyss:#012624; --deep:#011d1c; --kelp:#003734; --kelp-2:#03514b; --mist:#edfffe; --white:#ffffff; --silver:#bbc7c6;
+  --phosphor:#fde9ff; --aqua:#cbfffc; --teal:#00827c; --line:rgba(255,255,255,.10);
+  --g-aurora:linear-gradient(90deg,#cbfffc 0%,#edfffe 26.25%,#fffdfa 47.57%,#fad1ff 88.96%);
+  --f:"DM Sans","Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--abyss);color:var(--silver);font-family:var(--f);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--abyss)}
+h1,h2,h3{font-weight:500;color:var(--white);margin:0;letter-spacing:-.02em;text-wrap:balance}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lbl{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--silver)}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(1,38,36,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px}
+.logo{font-size:19px;color:var(--white);font-weight:500;display:flex;align-items:center;gap:9px}
+.logo i{width:9px;height:9px;border-radius:50%;background:linear-gradient(90deg,#00827c,#cbfffc)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{all:unset;cursor:pointer;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:6px;color:var(--silver)}
+.tabs button[aria-pressed="true"]{background:var(--kelp);color:var(--white)}
+.tabs button:focus-visible{outline:2px solid var(--aqua)}
+main{padding-block:36px 80px}
+.card{background:var(--kelp);border-radius:16px;padding:28px;min-width:0}
+.card.deep{background:var(--deep)}
+.stack{display:grid;gap:16px;align-content:start}
+.grid2{align-items:start}
+.tabs[hidden]{display:none}
+/* even spacing inside cards */
+.card p,.card ul{margin:0}
+.card .lbl+p,.card .lbl+div,.card .lbl+.flag{margin-top:12px}
+.card>p+p{margin-top:8px}
+.sec{gap:14px}
+.sec .body{display:grid;gap:10px}
+.sec .body .job{margin-top:0}
+.job p.note{margin-top:4px}
+.job ul{margin-top:10px}
+.flag:first-of-type{border-top:0;padding-top:0}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:Arial,system-ui,sans-serif;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:13px 18px;border:0;cursor:pointer;background:var(--kelp-2);color:var(--phosphor);font-weight:600}
+.btn:hover{background:#06655e}
+.btn.ghost{background:var(--deep);color:var(--white);font-weight:400}
+.btn.ghost:hover{background:#062a28}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label.f{display:grid;gap:8px}
+label.f span{color:var(--white);font-size:15px}
+label.f small{color:var(--silver);font-size:13px}
+input,select,textarea{width:100%;min-width:0;background:var(--deep);border:1px solid var(--line);color:var(--white);border-radius:6px;padding:12px 14px;font:inherit;font-size:15px}
+textarea{resize:vertical;line-height:1.5}
+.steps{display:flex;gap:8px;margin-bottom:22px}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--kelp)}
+.steps i.on{background:var(--aqua)}
+.hello h1{font-size:clamp(32px,5vw,48px);line-height:1.05;letter-spacing:-.04em}
+.hello p{max-width:60ch;margin:14px 0 0}
+.note{font-size:13px;color:var(--silver)}
+.err{color:var(--phosphor)}
+.pill{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:5px 9px;border-radius:6px;background:var(--deep);color:var(--silver)}
+.pill.on{background:var(--aqua);color:#012624}
+.pill.warn{background:var(--phosphor);color:#012624}
+.flag{display:grid;gap:4px;padding:14px 0;border-top:1px solid var(--line)}
+.flag b{color:var(--phosphor);font-weight:500}
+.flag em{font-style:normal;color:var(--aqua)}
+.cv{white-space:pre-wrap;color:var(--mist);font-size:15px;line-height:1.55}
+.ver{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:6px;font-size:14px;color:var(--mist);background:rgba(3,81,75,.45);margin-top:6px;transition:background .15s}
+.ver:hover{background:var(--kelp-2)}
+.ver:focus-visible{outline:2px solid var(--aqua)}
+.ver[aria-pressed="true"]{background:var(--deep);color:var(--white);cursor:default}
+.ver .go{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--phosphor);font-weight:600}
+.ver[aria-pressed="true"] .go{color:var(--aqua)}
+.chip{display:inline-block;background:var(--deep);color:var(--mist);border-radius:6px;padding:6px 10px;font-size:14px}
+.job{background:var(--deep);border-radius:12px;padding:16px 18px;margin-top:10px}
+.job h3{font-size:17px}
+.job ul{margin:10px 0 0;padding-left:18px;color:var(--mist)}
+.job li{margin:5px 0}
+.grid3{display:grid;grid-template-columns:2fr 2fr 1fr;gap:8px}
+@media (max-width:760px){.grid3{grid-template-columns:1fr}}
+.story h3{font-size:20px;margin-bottom:10px}
+.story p{margin:6px 0;color:var(--mist)}
+.story .k{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--silver);margin-top:10px}
+.ph{color:#f6a6ff;font-weight:600}
+.stage{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:18px 0;border-top:1px solid var(--line)}
+.stage:first-child{border-top:0}
+.num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--deep);color:var(--white);font-size:13px}
+.stage.cur .num{background:var(--aqua);color:#012624}
+.stage h3{font-size:18px}
+.stage p{margin:4px 0 0;font-size:14px}
+.chat{display:grid;gap:12px;max-height:56vh;overflow:auto;padding:4px}
+.msg{max-width:85%;padding:12px 14px;border-radius:12px;white-space:pre-wrap;line-height:1.5;font-size:15px}
+.msg.them{background:var(--deep);color:var(--mist)}
+.msg.me{background:var(--kelp-2);color:var(--white);justify-self:end}
+.task h2{font-size:28px;line-height:1.1;margin:10px 0}
+.task ol{margin:14px 0 0;padding-left:20px;color:var(--mist)}
+.task li{margin:6px 0}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--aqua);border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (max-width:760px){
+  .grid2{grid-template-columns:1fr}
+  header .wrap{flex-wrap:wrap;padding-block:10px}
+  .card{padding:22px 18px}
+  .stage{grid-template-columns:auto 1fr}
+  .stage .btn{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="logo"><i></i>EffyX <span class="lbl" style="margin-left:6px">Pilot</span></div>
+    <nav class="tabs" id="tabs" hidden aria-label="Workspace">
+      <button type="button" data-tab="today">Today</button>
+      <button type="button" data-tab="cv">CV</button>
+      <button type="button" data-tab="stories">Stories</button>
+      <button type="button" data-tab="stages">Stages</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+  <div class="card deep"><span class="spin"></span>&nbsp; Opening your workspace…</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="effyx-runtime.js"></script>
+<script>
+/* ---------- the agent's knowledge (approved EffyX documents only) ---------- */
+const BRAIN = `You are EffyX, an AI career agent. You help salespeople get hired into high-tech sales roles (SDR/BDR, AE, Account Manager, CSM, sales leadership), including people coming from field sales, insurance, retail or course sales, and junior sales reps who want to move up. You focus only on sales roles.
+Voice: direct, warm, human, short sentences, professional high-tech sales English. Never mention your sources.
+Hard rules:
+- Never invent experience, numbers, companies or results. Use only what the candidate gave you. When a number is missing, write a placeholder in square brackets like [your quota %] and ask for it.
+- Every claim should end up backed by a number (quota, attainment %, rank, deal size, cycle length, retention).
+- You prepare the candidate before interviews. You never help during a live interview.
+Translation from non-tech sales to high-tech sales language (examples): monthly target of X policies -> monthly quota of X; hit target 11 of 12 months -> hit quota 11 of 12 months; called lists of customers -> outbound prospecting, cold calling; customers came from ads -> inbound leads; checked budget and who decides -> qualified leads (BANT); two weeks from first call to signature -> two-week sales cycle; moved customers to a pricier package -> upsell; sold an extra product -> cross-sell; customers renewed every year -> renewals, retention, low churn; customers referred friends -> referral pipeline; tracked customers in Excel/system -> CRM management, pipeline hygiene; spoke with procurement and the CEO -> engaged the economic buyer and decision maker; convinced a customer who said it's expensive -> objection handling (price); first place in the team -> #1 of N reps.
+What recruiters look for and where candidates fail: SDRs are measured on meetings held that the AE accepts as real opportunities. Common mistakes: describing the role as a stepping stone, inflating experience, no company research (about an hour is expected), arrogance, selling traits (hungry, competitive) instead of evidence, criticizing a past manager, defensive answers about weaknesses (use awareness, action, result). Frameworks interviewers may mention: BANT, MEDDICC, SPICED, SPIN.
+The six hiring stages and what each tests:
+1 Phone screen (recruiter call): can you tell your story in numbers in a few minutes.
+2 Home assignment: proof of skill, a presentation, case or role-play on a deadline; people fail on delivery under pressure.
+3 Hiring manager + HR: attitude, credibility, problem solving; one wrong word can end it.
+4 VP or CEO: fit with the company's vision; why this company and why this role.
+5 References: that the numbers you gave check out.
+6 Contract: negotiation of base, commission and OTE; don't name a number first, ask how questions.`;
+
+const STAGES = [
+  ["Phone screen","The recruiter call","Can you tell your story in numbers, in a few minutes.","You are a high-tech recruiter doing a 15 minute phone screen for the candidate's target role at a B2B SaaS company. Ask one question at a time: background in two minutes, why high-tech sales, why this role, numbers, availability. Push back gently when an answer has no numbers."],
+  ["Home assignment","The task","Proof of skill under a deadline.","You are a sales manager. Give the candidate a short role-play: you are a prospect (Head of Sales at a 200 person company). The candidate runs a short discovery call. Raise one objection after their opening. Stay in character, one message at a time."],
+  ["Hiring manager + HR","The table","Attitude, credibility and problem solving.","You play two interviewers, a sales hiring manager and an HR partner, and label each question with [Manager] or [HR]. Ask about a quarter behind target, a lost deal, why they left their last job, and their weaknesses. One question at a time."],
+  ["VP or CEO","The big picture","Fit with the company's vision.","You are the VP Sales. Ask why this company, why this role, what they would do in the first 30 days, and sell me our product. One question at a time."],
+  ["References","The check","That the numbers you gave check out.","You are a recruiter about to call the candidate's references. Ask the candidate who their references are, what each will say, and test whether each number they claimed would be confirmed. One question at a time."],
+  ["Contract","The offer","Base, commission and OTE.","You are the recruiter presenting a verbal offer. Ask for salary expectations first, then present an offer with base, commission and OTE, and respond realistically to their negotiation. One message at a time."]
+];
+
+/* ---------- small helpers ---------- */
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mark = s => esc(s).replace(/\[([^\]]{1,60})\]/g, '<span class="ph">[$1]</span>');
+const today = () => new Date().toISOString().slice(0,10);
+let db=null, me=null, sample=null, uid=null;
+const S = {profile:null, cv:null, stories:null, stages:null, practice:null, today:null};
+const writing = {};
+function ref(k){ return db.doc("data/users/"+uid+"/"+k); }
+async function save(k, data){
+  S[k]=data;
+  const prev = writing[k] || Promise.resolve();
+  writing[k] = prev.then(()=>ref(k).set(data)).catch(e=>{ console.warn("save failed",k,e); toast("Couldn't save. Check your connection and try again."); });
+  return writing[k];
+}
+function toast(t){ const d=document.createElement("div"); d.className="card deep err"; d.style.cssText="position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;max-width:520px;margin:auto"; d.textContent=t; document.body.append(d); setTimeout(()=>d.remove(),4000); }
+function aiError(e){
+  if(e && e.code==="rate_limited") return "The agent is busy right now. Try again in a minute.";
+  if(e && e.code==="limit_cv") return "You've used this month's 2 CV versions from EffyX. You can still edit your CV yourself.";
+  if(e && e.code==="limit_practice") return "You've used this month's 2 practice sessions. New ones open next month.";
+  if(e && (e.code==="limit_monthly"||e.code==="budget_exhausted")) return "You've reached this month's pilot limit. It resets next month.";
+  if(e && e.code==="pilot_full") return "The pilot is full right now.";
+  if(e && e.code==="unauthorized") return "Your sign-in expired. Reload the page and sign in again.";
+  return "Something went wrong with the agent. Try again.";
+}
+async function ask(prompt, opts={}){ return sample.json(prompt, Object.assign({modelTier:"default"}, opts)); }
+
+/* ---------- boot ---------- */
+(async function boot(){
+  const cap = window.claude && window.claude.use ? window.claude : null;
+  if(!cap){ return blocked(); }
+  [db, me, sample] = await Promise.all([cap.use("db"), cap.use("user"), cap.use("sample")]);
+  if(!db || !me){ return blocked(); }
+  uid = await me.id();
+  if(!uid){ return blocked(); }
+  const timer = setTimeout(()=>{ app.innerHTML = `<div class="card deep">Still loading. Check your connection, then reopen the page.</div>`; }, 10000);
+  try{
+    const snaps = await Promise.all(Object.keys(S).map(k=>ref(k).get()));
+    Object.keys(S).forEach((k,i)=>{ S[k] = snaps[i].data() || null; });
+  }catch(e){ clearTimeout(timer); app.innerHTML = `<div class="card deep err">Couldn't load your workspace. Reopen the page.</div>`; return; }
+  clearTimeout(timer);
+  if(!S.profile || !S.profile.done) return onboardProfile();
+  if(!S.cv) return onboardCV();
+  openWorkspace("today");
+})();
+
+function blocked(){
+  const why=(window.effyx&&window.effyx.blockReason)||"signed_out";
+  if(why==="pilot_full"){ app.innerHTML=`<div class="card deep stack"><h2>The pilot is full</h2><p>All 20 pilot seats are taken. We'll let you know when the next group opens.</p></div>`; return; }
+  if(why!=="signed_out"){ app.innerHTML=`<div class="card deep err stack"><h2>Couldn't open your workspace</h2><p>Check your connection and reload the page.</p></div>`; return; }
+  app.innerHTML = `<div class="card deep stack"><span class="lbl">EffyX pilot</span><h2>Sign in to start</h2>
+  <p>Use your Google account. Your answers and CV stay private to you.</p>
+  <div><button class="btn" type="button" id="gsign">Continue with Google</button></div></div>`;
+  $("#gsign").onclick=()=>window.effyx.signIn();
+}
+
+/* ---------- onboarding ---------- */
+function stepsBar(n){ return `<div class="steps" aria-hidden="true">${[1,2,3].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div>`; }
+
+function onboardProfile(){
+  const opener="Hi, I'm EffyX. Before we touch your CV, I want to get to know you. The more you tell me, the better I can help, so take your time and write as much as you like.\n\nLet's start simple: what do you sell today, and to whom?";
+  const log=(S.profile&&S.profile.intake)||[{role:"assistant",content:opener}];
+  let busy=false, turns=log.filter(m=>m.role==="user").length;
+  app.innerHTML = `${stepsBar(1)}
+  <div class="hello stack" style="margin-bottom:24px"><span class="lbl">Step 1 of 3 · Getting to know you</span>
+    <h1>Tell me about you.</h1>
+    <p>This is a conversation, not a form. The more you share about your work, your targets and what's been hard, the better your plan will fit you. Your answers stay private to you and the EffyX pilot team.</p></div>
+  <div class="card stack"><div class="chat" id="chat" aria-live="polite"></div>
+  <form class="row" id="say"><textarea id="ans" rows="4" placeholder="Write freely. Details help." style="flex:1 1 300px"></textarea>
+  <div class="stack" style="gap:8px"><button class="btn" type="submit">Send</button><button class="btn ghost" id="enough" type="button" ${turns<3?"hidden":""}>That's enough for now</button></div></form>
+  <p class="note" id="hint">${turns<3?"A few more answers and I'll have enough to build your plan.":"You can keep going, or move on whenever you're ready."}</p></div>`;
+  const chat=$("#chat");
+  function bubble(who,text){ const d=document.createElement("div"); d.className="msg "+who; d.textContent=text; chat.append(d); chat.scrollTop=chat.scrollHeight; return d; }
+  log.forEach(m=>bubble(m.role==="assistant"?"them":"me",m.content));
+  const guide=`${BRAIN}
+
+YOU ARE NOW IN THE INTAKE CONVERSATION. Your only job is to get to know this candidate deeply. Do not give advice yet.
+- Ask ONE open question at a time, under 45 words. Start with one short line that shows you listened, then the question.
+- Dig into specifics: what exactly they sell (for insurance: which lines; for real estate: commercial or residential, rent or sale; for retail: which products), B2B or B2C, who the buyer is, how leads come in, how long a sale takes, deal sizes.
+- Ask about targets: the targets they were given and the ones they set for themselves, which they hit and which they missed, and why. Ask for real numbers, rankings, years.
+- Ask why high-tech sales and why now, which role they aim for, and what has been hard or frustrating in their search so far.
+- Let them talk. If an answer is short, ask for an example or a story. Never invent anything about them.`;
+  async function turn(){
+    busy=true; const b=bubble("them","…");
+    try{
+      const msgs=[{role:"user",content:guide+"\n\nThe conversation so far follows. Reply with your next message only."}].concat(log.map(m=>({role:m.role==="assistant"?"assistant":"user",content:m.content})));
+      const r=await sample(msgs,{cache:false,modelTier:"default",onText:({text})=>{ b.textContent=text; chat.scrollTop=chat.scrollHeight; }});
+      b.textContent=r.text; log.push({role:"assistant",content:r.text});
+      await save("profile",Object.assign({},S.profile||{},{intake:log}));
+    }catch(e){ b.textContent=aiError(e); b.classList.add("err"); }
+    busy=false;
+  }
+  $("#say").addEventListener("submit",e=>{
+    e.preventDefault(); if(busy) return;
+    const t=$("#ans").value.trim(); if(!t) return;
+    $("#ans").value=""; bubble("me",t); log.push({role:"user",content:t}); turns++;
+    if(turns>=3){ $("#enough").hidden=false; $("#hint").textContent="You can keep going, or move on whenever you're ready."; }
+    if(!sample){ bubble("them","The agent is not available right now. Reload the page and try again."); return; }
+    turn();
+  });
+  $("#enough").onclick=()=>{ if(!busy) wrapProfile(log); };
+}
+
+async function wrapProfile(log){
+  app.innerHTML = `${stepsBar(1)}<div class="card deep"><span class="spin"></span>&nbsp; Putting together what I learned about you…</div>`;
+  const transcript=log.map(m=>(m.role==="assistant"?"EffyX: ":"Candidate: ")+m.content).join("\n").slice(0,16000);
+  let r;
+  try{
+    r=await ask(`${BRAIN}
+
+TASK: Summarize this intake conversation into the candidate's profile. Use only what the candidate said. Leave a field empty if they didn't say it.
+${transcript}
+Return JSON only: {"sell":"what they sell and to whom, one line","sector":"","segment":"B2B, B2C or both","years":"years in sales as they said it","numbers":"every number they gave, in their words","hit":["targets they hit"],"missed":["targets they missed, with the reason they gave"],"motivation":"why high-tech sales, why now","target_hint":"the role they mentioned, or empty","strengths":["from what they said"],"hard":["what's been hard or frustrating"],"summary":"3 sentences to the candidate, starting with 'Here's what I understood:'"}`);
+  }catch(e){ app.innerHTML=`<div class="card deep stack"><p class="err">${esc(aiError(e))}</p><button class="btn" type="button" id="rt">Try again</button></div>`; $("#rt").onclick=()=>wrapProfile(log); return; }
+  const roles=["SDR / BDR","Account Executive","Account Manager","Customer Success","Sales leadership","Not sure yet"];
+  const guess=roles.find(x=>(r.target_hint||"").toLowerCase().includes(x.split(" ")[0].toLowerCase()))||"Not sure yet";
+  app.innerHTML = `${stepsBar(1)}
+  <div class="hello stack" style="margin-bottom:24px"><span class="lbl">Step 1 of 3 · Check my summary</span><h1>Did I get you right?</h1><p>${esc(r.summary)}</p></div>
+  <form class="card stack" id="pf">
+    <div class="grid2">
+      <label class="f"><span>The role you're aiming for</span><select id="p_target">${roles.map(x=>`<option ${x===guess?"selected":""}>${x}</option>`).join("")}</select></label>
+      <label class="f"><span>English at work</span><select id="p_english"><option>Basic</option><option selected>Conversational</option><option>Fluent</option><option>Native</option></select></label>
+    </div>
+    <label class="f"><span>Coaching rhythm</span><select id="p_rhythm"><option>Daily: one small task a day</option><option>Weekly: a task pack once a week</option></select><small>You can switch anytime.</small></label>
+    <div class="row"><button class="btn" type="submit">Looks right. Next: your CV →</button><button class="btn ghost" type="button" id="more">Tell you more</button></div>
+  </form>`;
+  $("#more").onclick=()=>onboardProfile();
+  $("#pf").addEventListener("submit",async e=>{
+    e.preventDefault();
+    await save("profile",Object.assign({},S.profile||{},r,{intake:log,target:$("#p_target").value,english:$("#p_english").value,rhythm:$("#p_rhythm").value.startsWith("Daily")?"daily":"weekly",created:(S.profile&&S.profile.created)||Date.now(),done:true}));
+    onboardCV();
+  });
+}
+
+function onboardCV(){
+  app.innerHTML = `${stepsBar(2)}
+  <div class="hello stack" style="margin-bottom:24px"><span class="lbl">Step 2 of 3 · Your CV</span>
+    <h1>Paste your CV as it is today.</h1>
+    <p>Don't fix anything first. The agent will translate it into the language high-tech sales recruiters scan for, and keep your original.</p></div>
+  <div class="card stack">
+    <label class="f"><span>Your CV text</span><small>Copy it from Word or PDF and paste here. You can also load a .txt file.</small><textarea id="cv_in" rows="14"></textarea></label>
+    <div class="row"><input type="file" id="cv_file" accept=".txt,.md,text/plain" style="max-width:320px"><span class="note">For PDF or Word, paste the text for now.</span></div>
+    <div class="row"><button class="btn" id="cv_go" type="button">Translate my CV →</button><span class="note" id="cv_msg"></span></div>
+  </div>`;
+  $("#cv_file").addEventListener("change", async e=>{ const f=e.target.files[0]; if(f) $("#cv_in").value = await f.text(); });
+  $("#cv_go").addEventListener("click", ()=>translate($("#cv_in").value.trim()));
+}
+
+async function translate(original){
+  if(original.length<80){ $("#cv_msg").innerHTML='<span class="err">Paste your full CV, at least a few lines.</span>'; return; }
+  if(!sample){ $("#cv_msg").innerHTML='<span class="err">The agent is not available right now. Reload the page and try again.</span>'; return; }
+  const btn=$("#cv_go"); btn.disabled=true;
+  app.insertAdjacentHTML("afterbegin","");
+  $("#cv_msg").innerHTML = `<span class="spin"></span>&nbsp; The agent is reading your CV. This takes about a minute.`;
+  const p=S.profile;
+  const prompt = `${BRAIN}
+
+TASK: Translate this candidate's CV into high-tech sales language for the target role "${p.target}".
+Candidate profile: sells "${p.sell}"; ${p.years||""} years in sales; English: ${p.english}. Their numbers, in their words: "${p.numbers||"none given"}". Targets hit: ${JSON.stringify(p.hit||[])}. Targets missed: ${JSON.stringify(p.missed||[])}. Motivation: ${p.motivation||""}.
+CV:
+"""${original.slice(0,12000)}"""
+
+Return JSON only, in exactly this shape:
+{"cv": SECTIONS (the full rewritten CV in English, same facts, high-tech sales wording, a number on every achievement bullet or a [placeholder] where the number is missing),
+ "flags": [{"phrase":"exact words from the original CV that would hurt in a high-tech interview or ATS","why":"one short sentence","fix":"the replacement wording"}],
+ "missing": ["short questions asking for each number you had to leave as a placeholder"],
+ "stories": [{"title":"short title","situation":"","action":"","result":"with a number or [placeholder]","use_for":"which interview question this answers"}],
+ "summary": "two sentences to the candidate: what you changed and the one thing to do next"}
+Give 3 stories built only from facts in the CV or profile. Give up to 6 flags.
+SECTIONS shape: ${SEC_SHAPE}`;
+  try{
+    const r = await ask(prompt, {modelTier:"complex", purpose:"cv"});
+    const now=Date.now();
+    await save("cv",{versions:[{id:"v1",at:now,by:"you",text:original},{id:"v2",at:now+1,by:"EffyX",note:"Translated by EffyX",sections:normSec(r.cv),text:secText(normSec(r.cv))}], current:"v2", flags:r.flags||[], missing:r.missing||[], summary:r.summary||""});
+    await save("stories",{items:(r.stories||[]).slice(0,5)});
+    await save("stages",{current:0});
+    onboardDone();
+  }catch(e){ btn.disabled=false; $("#cv_msg").innerHTML = `<span class="err">${esc(aiError(e))}</span>`; }
+}
+
+function onboardDone(){
+  app.innerHTML = `${stepsBar(3)}
+  <div class="hello stack" style="margin-bottom:24px"><span class="lbl">Step 3 of 3 · Your first result</span>
+    <h1>Your CV now speaks high-tech sales.</h1>
+    <p>${esc(S.cv.summary)}</p></div>
+  <div class="grid2">
+    <div class="card stack"><span class="lbl">Words that could cost you</span><h2>${S.cv.flags.length} found</h2><p class="note">Each one comes with the wording to use instead.</p></div>
+    <div class="card stack"><span class="lbl">Numbers to add</span><h2>${S.cv.missing.length} open</h2><p class="note">Fill them in and your CV gets stronger. Never guess a number.</p></div>
+  </div>
+  <div class="row" style="margin-top:20px"><button class="btn" id="go_ws" type="button">Open my workspace →</button></div>`;
+  $("#go_ws").onclick=()=>openWorkspace("cv");
+}
+
+/* ---------- workspace ---------- */
+let tab="today";
+function openWorkspace(t){
+  $("#tabs").hidden=false; tab=t;
+  document.querySelectorAll("#tabs button").forEach(b=>{ b.setAttribute("aria-pressed", b.dataset.tab===t); b.onclick=()=>openWorkspace(b.dataset.tab); });
+  ({today:renderToday, cv:renderCV, stories:renderStories, stages:renderStages})[t]();
+  window.scrollTo(0,0);
+}
+
+/* Today: one task, sized by the chosen rhythm */
+function renderToday(){
+  const p=S.profile, t=S.today;
+  const fresh = t && t.date===today() && t.rhythm===p.rhythm;
+  app.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:18px">
+    <span class="lbl">${p.rhythm==="daily"?"Daily rhythm":"Weekly rhythm"} · ${esc(STAGES[(S.stages&&S.stages.current)||0][0])}</span>
+    <button class="btn ghost" id="rh" type="button">Switch to ${p.rhythm==="daily"?"weekly":"daily"}</button></div>
+  <div class="card task" id="task">${fresh? taskHtml(t) : `<span class="spin"></span>&nbsp; The agent is preparing your ${p.rhythm==="daily"?"task for today":"tasks for this week"}…`}</div>`;
+  $("#rh").onclick=async()=>{ await save("profile",Object.assign({},p,{rhythm:p.rhythm==="daily"?"weekly":"daily"})); renderToday(); };
+  if(!fresh) makeTask();
+  else bindTask();
+}
+function taskHtml(t){
+  return `<span class="lbl">${t.done?"Done":"Your task"} · about ${esc(t.minutes)} min</span>
+  <h2>${esc(t.title)}</h2><p>${esc(t.why)}</p>
+  <ol>${(t.steps||[]).map(s=>`<li>${mark(s)}</li>`).join("")}</ol>
+  <div class="row" style="margin-top:20px">${t.done?'<span class="pill on">Completed</span>':'<button class="btn" id="done" type="button">Mark as done</button>'}</div>`;
+}
+function bindTask(){ const b=$("#done"); if(b) b.onclick=async()=>{ await save("today",Object.assign({},S.today,{done:true})); renderToday(); }; }
+async function makeTask(){
+  const p=S.profile, st=STAGES[(S.stages&&S.stages.current)||0];
+  const last=(S.practice&&S.practice.sessions||[]).slice(-1)[0];
+  const weekly=p.rhythm==="weekly";
+  try{
+    const r = await ask(`${BRAIN}
+
+TASK: Give this candidate ${weekly?"a pack of 3 small tasks for this week":"one small task for today"}.
+Target role: ${p.target}. Sells today: ${p.sell}. Current hiring stage: ${st[0]}. What has been hard for them: ${JSON.stringify(p.hard||[])}.
+Open numbers to fill in their CV: ${JSON.stringify((S.cv&&S.cv.missing)||[])}.
+Last practice feedback: ${last?JSON.stringify(last.feedback).slice(0,800):"none yet"}.
+Return JSON only: {"title":"short","why":"one sentence on why this moves them closer to an offer","steps":["concrete step", "..."],"minutes": number}
+${weekly?"Put each of the 3 tasks as one step.":"Keep it under 20 minutes."}`);
+    await save("today",{date:today(), rhythm:p.rhythm, title:r.title, why:r.why, steps:r.steps||[], minutes:r.minutes||15, done:false});
+    if(tab==="today"){ $("#task").innerHTML=taskHtml(S.today); bindTask(); }
+  }catch(e){ if(tab==="today") $("#task").innerHTML=`<p class="err">${esc(aiError(e))}</p><button class="btn ghost" type="button" onclick="renderToday()">Try again</button>`; }
+}
+
+/* CV: versions, flags, open numbers, manual edits */
+const SEC=[["summary","Summary"],["experience","Experience"],["education","Education"],["skills","Skills"],["languages","Languages"],["hobbies","Hobbies & interests"]];
+const SEC_SHAPE='{"summary":"2-4 sentences","experience":[{"title":"","company":"","dates":"","bullets":["..."]}],"education":[{"degree":"","school":"","dates":""}],"skills":["..."],"languages":["..."],"hobbies":"one line or empty"}';
+function normSec(x){ x=x&&typeof x==="object"?x:{}; return {summary:String(x.summary||""),experience:(x.experience||[]).map(j=>({title:j.title||"",company:j.company||"",dates:j.dates||"",bullets:(j.bullets||[]).map(String)})),education:(x.education||[]).map(e=>({degree:e.degree||"",school:e.school||"",dates:e.dates||""})),skills:(x.skills||[]).map(String),languages:(x.languages||[]).map(String),hobbies:String(x.hobbies||"")}; }
+function secText(c){ const o=[];
+  if(c.summary) o.push("SUMMARY\n"+c.summary);
+  if(c.experience.length) o.push("EXPERIENCE\n"+c.experience.map(j=>`${j.title}, ${j.company} (${j.dates})\n`+j.bullets.map(b=>"- "+b).join("\n")).join("\n\n"));
+  if(c.education.length) o.push("EDUCATION\n"+c.education.map(e=>`${e.degree}, ${e.school} (${e.dates})`).join("\n"));
+  if(c.skills.length) o.push("SKILLS\n"+c.skills.join(", "));
+  if(c.languages.length) o.push("LANGUAGES\n"+c.languages.join(", "));
+  if(c.hobbies) o.push("HOBBIES\n"+c.hobbies);
+  return o.join("\n\n"); }
+function secView(k,c){
+  if(k==="summary"||k==="hobbies") return c[k]?`<p class="cv">${mark(c[k])}</p>`:'<p class="note">Empty. Add something with Edit.</p>';
+  if(k==="skills"||k==="languages") return c[k].length?`<div class="row">${c[k].map(x=>`<span class="chip">${mark(x)}</span>`).join("")}</div>`:'<p class="note">Empty.</p>';
+  if(k==="experience") return c.experience.map(j=>`<div class="job"><h3>${mark(j.title)}</h3><p class="note">${mark(j.company)}${j.dates?" · "+esc(j.dates):""}</p><ul>${j.bullets.map(b=>`<li>${mark(b)}</li>`).join("")}</ul></div>`).join("")||'<p class="note">Empty.</p>';
+  if(k==="education") return c.education.map(e=>`<div class="job"><h3>${mark(e.degree)}</h3><p class="note">${mark(e.school)}${e.dates?" · "+esc(e.dates):""}</p></div>`).join("")||'<p class="note">Empty.</p>';
+}
+function secEdit(k,c){
+  if(k==="summary"||k==="hobbies") return `<textarea data-f="text" rows="${k==="summary"?6:3}">${esc(c[k])}</textarea>`;
+  if(k==="skills"||k==="languages") return `<label class="f"><small>One per line</small><textarea data-f="list" rows="6">${esc(c[k].join("\n"))}</textarea></label>`;
+  const rows=k==="experience"?(c.experience.length?c.experience:[{title:"",company:"",dates:"",bullets:[]}]):(c.education.length?c.education:[{degree:"",school:"",dates:""}]);
+  return `<div class="items">${rows.map(r=>itemEdit(k,r)).join("")}</div><button class="btn ghost" type="button" data-add style="margin-top:10px">+ Add ${k==="experience"?"a role":"an entry"}</button>`;
+}
+function itemEdit(k,r){
+  return k==="experience"
+   ? `<div class="item job stack"><div class="grid3"><input data-i="title" placeholder="Role" value="${esc(r.title)}"><input data-i="company" placeholder="Company" value="${esc(r.company)}"><input data-i="dates" placeholder="Dates" value="${esc(r.dates)}"></div><label class="f"><small>Achievements, one per line</small><textarea data-i="bullets" rows="5">${esc(r.bullets.join("\n"))}</textarea></label><button class="btn ghost" type="button" data-rm style="justify-self:start;padding:8px 12px">Remove role</button></div>`
+   : `<div class="item job stack"><div class="grid3"><input data-i="degree" placeholder="Degree or course" value="${esc(r.degree)}"><input data-i="school" placeholder="School" value="${esc(r.school)}"><input data-i="dates" placeholder="Dates" value="${esc(r.dates)}"></div><button class="btn ghost" type="button" data-rm style="justify-self:start;padding:8px 12px">Remove</button></div>`;
+}
+function readEdit(k,box){
+  if(k==="summary"||k==="hobbies") return box.querySelector('[data-f="text"]').value.trim();
+  if(k==="skills"||k==="languages") return box.querySelector('[data-f="list"]').value.split("\n").map(x=>x.trim()).filter(Boolean);
+  return [...box.querySelectorAll(".item")].map(it=>{ const g=n=>(it.querySelector(`[data-i="${n}"]`)||{}).value||"";
+    return k==="experience"?{title:g("title").trim(),company:g("company").trim(),dates:g("dates").trim(),bullets:g("bullets").split("\n").map(x=>x.trim()).filter(Boolean)}:{degree:g("degree").trim(),school:g("school").trim(),dates:g("dates").trim()}; })
+    .filter(o=>Object.values(o).some(v=>Array.isArray(v)?v.length:v));
+}
+async function newVersion(sections,by,note){
+  const c=S.cv, id="v"+(c.versions.length+1);
+  const versions=c.versions.concat([{id,at:Date.now(),by,note,sections,text:secText(sections)}]).slice(-12);
+  await save("cv",Object.assign({},c,{versions,current:id}));
+}
+function renderCV(){
+  const c=S.cv, cur=c.versions.find(v=>v.id===c.current)||c.versions[c.versions.length-1];
+  const side=`<div class="stack">
+    <div class="card"><span class="lbl">Versions</span><p class="note" style="margin:6px 0 4px">Click a version to open it. Every change is saved as a new version.</p><div>${c.versions.slice().reverse().map(v=>`<button class="ver" type="button" data-v="${v.id}" aria-pressed="${v.id===cur.id}"><span>${esc(v.id)} · ${esc(v.note||("by "+v.by))} <span class="note">· ${new Date(v.at).toLocaleDateString()}</span></span><span class="go">${v.id===cur.id?"Showing":"Open →"}</span></button>`).join("")}</div></div>
+    <div class="card"><span class="lbl">Numbers to add</span>${c.missing.length?c.missing.map(m=>`<p style="color:var(--mist)">${esc(m)}</p>`).join(""):'<p>None open.</p>'}</div>
+    <div class="card"><span class="lbl">Words that could cost you</span>${c.flags.map(f=>`<div class="flag"><b>“${esc(f.phrase)}”</b><span>${esc(f.why)}</span><em>Use: ${esc(f.fix)}</em></div>`).join("")||"<p>None found.</p>"}</div>
+  </div>`;
+  let main;
+  if(cur.sections){
+    main=`<div class="stack">${SEC.map(([k,t])=>`<div class="card stack sec" data-k="${k}">
+      <div class="row" style="justify-content:space-between"><h2 style="font-size:20px">${t}</h2><div class="row"><button class="btn ghost" type="button" data-imp style="padding:8px 12px">Improve with EffyX</button><button class="btn" type="button" data-ed style="padding:8px 12px">Edit</button></div></div>
+      <div class="body">${secView(k,cur.sections)}</div></div>`).join("")}</div>`;
+  }else{
+    main=`<div class="card stack"><span class="lbl">Showing ${esc(cur.id)} · ${esc(cur.note||("by "+cur.by))}</span><div class="cv">${mark(cur.text)}</div>
+    <div class="row"><button class="btn" type="button" id="org">Split into sections</button><span class="note" id="orgmsg">The agent splits this text into sections without changing your words.</span></div></div>`;
+  }
+  app.innerHTML=`<div class="grid2" style="grid-template-columns:1.6fr 1fr">${main}${side}</div>`;
+  document.querySelectorAll(".ver").forEach(b=>b.onclick=async()=>{ if(b.dataset.v===cur.id) return; await save("cv",Object.assign({},c,{current:b.dataset.v})); renderCV(); });
+  const org=$("#org");
+  if(org) org.onclick=async()=>{
+    if(!sample) return; org.disabled=true; $("#orgmsg").innerHTML='<span class="spin"></span>&nbsp; Splitting into sections…';
+    try{ const r=await ask(`Split this CV into sections. Keep the candidate's exact words, don't rewrite, don't add anything. Use [placeholder] nowhere.\nCV:\n"""${cur.text.slice(0,12000)}"""\nReturn JSON only in this shape: ${SEC_SHAPE}`);
+      await newVersion(normSec(r),"EffyX","Split into sections"); renderCV();
+    }catch(e){ org.disabled=false; $("#orgmsg").innerHTML=`<span class="err">${esc(aiError(e))}</span>`; }
+  };
+  document.querySelectorAll(".sec").forEach(card=>{
+    const k=card.dataset.k, name=SEC.find(x=>x[0]===k)[1], body=card.querySelector(".body");
+    card.querySelector("[data-ed]").onclick=()=>{
+      body.innerHTML=secEdit(k,cur.sections)+`<div class="row" style="margin-top:12px"><button class="btn" type="button" data-sv>Save ${name}</button><button class="btn ghost" type="button" data-cx>Cancel</button></div>`;
+      body.querySelector("[data-cx]").onclick=renderCV;
+      const add=body.querySelector("[data-add]");
+      if(add) add.onclick=()=>body.querySelector(".items").insertAdjacentHTML("beforeend",itemEdit(k,k==="experience"?{title:"",company:"",dates:"",bullets:[]}:{degree:"",school:"",dates:""}));
+      body.addEventListener("click",e=>{ if(e.target.matches("[data-rm]")) e.target.closest(".item").remove(); });
+      body.querySelector("[data-sv]").onclick=async()=>{
+        const val=readEdit(k,body); const sec=Object.assign({},cur.sections,{[k]:val});
+        if(JSON.stringify(val)===JSON.stringify(cur.sections[k])) return renderCV();
+        await newVersion(sec,"you","You edited "+name); renderCV();
+      };
+    };
+    card.querySelector("[data-imp]").onclick=async e=>{
+      if(!sample) return; const btn=e.currentTarget; btn.disabled=true; btn.innerHTML='<span class="spin"></span>';
+      const p=S.profile;
+      try{
+        const r=await ask(`${BRAIN}
+
+TASK: Improve only the "${name}" section of this CV for the target role ${p.target}. Keep the same facts. Use high-tech sales wording. Never invent numbers; put a [placeholder] where a number is missing.
+Candidate context: sells ${p.sell}; numbers they gave: ${p.numbers||"none"}.
+Current section (JSON): ${JSON.stringify(cur.sections[k])}
+Return JSON only: {"value": <the improved section in exactly the same JSON shape>}`, {purpose:"cv"});
+        const sec=normSec(Object.assign({},cur.sections,{[k]:r.value}));
+        await newVersion(sec,"EffyX","EffyX improved "+name); renderCV();
+      }catch(err){ btn.disabled=false; btn.textContent="Improve with EffyX"; toast(aiError(err)); }
+    };
+  });
+}
+
+/* Stories */
+function renderStories(){
+  const items=(S.stories&&S.stories.items)||[];
+  app.innerHTML = `<div class="hello" style="margin-bottom:22px"><span class="lbl">Your deal stories</span><h1 style="font-size:34px;margin-top:8px">Stories you can tell in any interview.</h1><p>Built only from your CV. Fill the highlighted numbers before you use them.</p></div>
+  <div class="grid2">${items.map(s=>`<div class="card story"><h3>${esc(s.title)}</h3>
+  <span class="k">Situation</span><p>${mark(s.situation)}</p><span class="k">What you did</span><p>${mark(s.action)}</p><span class="k">Result</span><p>${mark(s.result)}</p><span class="k">Answers</span><p>${esc(s.use_for)}</p></div>`).join("")||'<div class="card">No stories yet.</div>'}</div>`;
+}
+
+/* Stages and practice */
+function renderStages(){
+  const cur=(S.stages&&S.stages.current)||0;
+  app.innerHTML = `<div class="hello" style="margin-bottom:22px"><span class="lbl">Your hiring process</span><h1 style="font-size:34px;margin-top:8px">Where are you right now?</h1><p>Mark your current stage, then practice it with the agent. You get feedback at the end of every practice.</p></div>
+  <div class="card">${STAGES.map((s,i)=>`<div class="stage ${i===cur?"cur":""}"><span class="num">${i+1}</span>
+    <div><h3>${esc(s[1])} ${i===cur?'<span class="pill on" style="margin-left:6px">You are here</span>':""}</h3><p>${esc(s[0])} · ${esc(s[2])}</p>
+    ${i!==cur?`<button class="btn ghost" type="button" data-here="${i}" style="margin-top:10px;padding:8px 12px">I'm at this stage</button>`:""}</div>
+    <button class="btn" type="button" data-practice="${i}">Practice</button></div>`).join("")}</div>`;
+  document.querySelectorAll("[data-here]").forEach(b=>b.onclick=async()=>{ await save("stages",{current:+b.dataset.here}); renderStages(); });
+  document.querySelectorAll("[data-practice]").forEach(b=>b.onclick=()=>practice(+b.dataset.practice));
+}
+
+function practice(i){
+  const st=STAGES[i], p=S.profile, cv=S.cv.versions.find(v=>v.id===S.cv.current);
+  const intro = `${BRAIN}
+
+ROLE PLAY: ${st[3]}
+Candidate: target role ${p.target}; sells today: ${p.sell}; ${p.years||""} years in sales. What has been hard for them: ${JSON.stringify(p.hard||[])}.
+Candidate CV (for context, don't recite it): """${(cv&&cv.text||"").slice(0,5000)}"""
+Stay in character. Keep each message under 70 words. Don't give feedback during the role play. Start now with your first message.`;
+  const msgs=[{role:"user",content:intro}];
+  const sid="p"+Date.now();
+  let busy=false, ctl=null;
+  app.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:16px"><span class="lbl">Practice · ${esc(st[0])}</span><button class="btn ghost" id="back" type="button">Back to stages</button></div>
+  <div class="card stack"><div class="chat" id="chat" aria-live="polite"></div>
+  <form class="row" id="say"><textarea id="ans" rows="3" placeholder="Type your answer as you would say it" style="flex:1 1 300px"></textarea>
+  <div class="stack" style="gap:8px"><button class="btn" type="submit">Send</button><button class="btn ghost" id="fb" type="button">End and get feedback</button></div></form>
+  <p class="note">Practice in English, the way you would in the real interview.</p></div>`;
+  $("#back").onclick=()=>{ if(ctl) ctl.abort(); openWorkspace("stages"); };
+  const chat=$("#chat");
+  function bubble(who,text){ const d=document.createElement("div"); d.className="msg "+who; d.textContent=text; chat.append(d); chat.scrollTop=chat.scrollHeight; return d; }
+  async function turn(){
+    busy=true; const b=bubble("them","…"); ctl=new AbortController();
+    try{
+      const r=await sample(msgs,{cache:false, signal:ctl.signal, modelTier:"default", purpose:"practice", session:sid, onText:({text})=>{ b.textContent=text; chat.scrollTop=chat.scrollHeight; }});
+      b.textContent=r.text; msgs.push({role:"assistant",content:r.text});
+    }catch(e){ if(e&&e.name==="AbortError") return; b.textContent=aiError(e); b.classList.add("err"); }
+    busy=false;
+  }
+  $("#say").addEventListener("submit", e=>{
+    e.preventDefault(); if(busy) return;
+    const t=$("#ans").value.trim(); if(!t) return;
+    $("#ans").value=""; bubble("me",t); msgs.push({role:"user",content:t}); turn();
+  });
+  $("#fb").onclick=async()=>{
+    if(busy) return;
+    const transcript=msgs.slice(1).map(m=>(m.role==="assistant"?"Interviewer: ":"Candidate: ")+m.content).join("\n");
+    if(msgs.length<4){ toast("Answer at least one question first."); return; }
+    busy=true; $("#fb").disabled=true; bubble("them","Preparing your feedback…");
+    try{
+      const f=await ask(`${BRAIN}
+
+TASK: Give feedback on this practice of the stage "${st[0]}" (${st[2]}). Be honest and specific, quote the candidate's own words.
+Transcript:
+${transcript.slice(0,14000)}
+Return JSON only: {"verdict":"one sentence","risk":"low|medium|high (risk of being filtered out)","worked":["..."],"fixes":[{"you_said":"exact words","better":"what to say instead","why":"short"}],"next":"one concrete thing to practice next"}`, {purpose:"practice", session:sid});
+      const sessions=((S.practice&&S.practice.sessions)||[]).concat([{at:Date.now(),stage:i,transcript:transcript.slice(0,6000),feedback:f}]).slice(-10);
+      await save("practice",{sessions});
+      chat.lastChild.remove();
+      feedbackView(i,f);
+    }catch(e){ busy=false; $("#fb").disabled=false; chat.lastChild.textContent=aiError(e); }
+  };
+  turn();
+}
+
+function feedbackView(i,f){
+  const st=STAGES[i];
+  app.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:16px"><span class="lbl">Feedback · ${esc(st[0])}</span><span class="pill ${f.risk==="low"?"on":"warn"}">Filter risk: ${esc(f.risk)}</span></div>
+  <div class="card stack"><h2>${esc(f.verdict)}</h2>
+  ${(f.worked||[]).length?`<div><span class="lbl">What worked</span>${f.worked.map(w=>`<p style="color:var(--mist)">${esc(w)}</p>`).join("")}</div>`:""}
+  <div><span class="lbl">Say it differently</span>${(f.fixes||[]).map(x=>`<div class="flag"><b>“${esc(x.you_said)}”</b><em>${esc(x.better)}</em><span>${esc(x.why)}</span></div>`).join("")||"<p>Nothing to fix this time.</p>"}</div>
+  <div><span class="lbl">Practice next</span><p style="color:var(--mist)">${esc(f.next)}</p></div>
+  <div class="row"><button class="btn" id="again" type="button">Practice again</button><button class="btn ghost" id="bk" type="button">Back to stages</button></div></div>`;
+  $("#again").onclick=()=>practice(i);
+  $("#bk").onclick=()=>openWorkspace("stages");
+}
+</script>
+
+</body></html>

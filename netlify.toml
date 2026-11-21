@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# The resume-review function is exposed at /api/review via its own
+# `export const config = { path: "/api/review" }`. No redirect needed.

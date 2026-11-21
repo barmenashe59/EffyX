@@ -1,12 +1,9 @@
 {
-  "name": "effyx-landing",
-  "version": "0.1.0",
+  "name": "effyx",
+  "version": "0.2.0",
   "private": true,
-  "description": "EffyX — AI career agent for high-tech sales. Marketing landing page + waitlist.",
-  "scripts": {
-    "dev": "npx --yes serve .",
-    "start": "npx --yes serve ."
-  },
-  "keywords": ["landing-page", "waitlist", "sales", "effyx"],
+  "description": "EffyX: AI career agent for sales people moving into high-tech. Site + pilot agent.",
+  "type": "module",
+  "scripts": { "dev": "npx --yes netlify-cli dev" },
   "license": "UNLICENSED"
 }

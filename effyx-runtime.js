@@ -82,6 +82,9 @@
     signIn: function () {
       return sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + "/agent.html" } });
     },
+    signInEmail: function (email) {
+      return sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + "/agent.html" } });
+    },
     signOut: async function () { await sb.auth.signOut(); location.reload(); }
   };
 

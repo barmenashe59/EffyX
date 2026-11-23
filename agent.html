@@ -264,48 +264,70 @@ function blocked(){
 /* ---------- onboarding ---------- */
 function stepsBar(n){ return `<div class="steps" aria-hidden="true">${[1,2,3].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div>`; }
 
-function onboardProfile(){
-  const opener="Hi, I'm EffyX. Before we touch your CV, I want to get to know you. The more you tell me, the better I can help, so take your time and write as much as you like.\n\nLet's start simple: what do you sell today, and to whom?";
+// Intake length: Bar's decision 23.11 (6 to 8 questions). The one place to change it.
+const INTAKE={min:6,max:8};
+
+function onboardProfile(more){
+  const opener="Hi, I'm EffyX. Before we touch your CV, I'll ask you "+INTAKE.min+" to "+INTAKE.max+" short questions about your sales work. Each one has a purpose: your answers are what I use later to rewrite your CV, build your deal stories and prepare you for every interview stage. The more real detail you give, the more the rest fits you.\n\nQuestion 1: what do you sell today, and to whom?";
   const log=(S.profile&&S.profile.intake)||[{role:"assistant",content:opener}];
   let busy=false, turns=log.filter(m=>m.role==="user").length;
+  const cap=more?turns+2:INTAKE.max;
+  if(!more && turns>=cap) return wrapProfile(log);
   app.innerHTML = `${stepsBar(1)}
   <div class="hello stack" style="margin-bottom:24px"><span class="lbl">Step 1 of 3 · Getting to know you</span>
     <h1>Tell me about you.</h1>
-    <p>This is a conversation, not a form. The more you share about your work, your targets and what's been hard, the better your plan will fit you. Your answers stay private to you and the EffyX pilot team.</p></div>
+    <p>${INTAKE.min} to ${INTAKE.max} short questions. Each answer helps me understand you, so your CV, your stories and your interview practice are built around you, not a template. Your answers stay private to you and the EffyX pilot team.</p></div>
   <div class="card stack"><div class="chat" id="chat" aria-live="polite"></div>
   <form class="row" id="say"><textarea id="ans" rows="4" placeholder="Write freely. Details help. (Enter to send, Shift+Enter for a new line)" style="flex:1 1 300px"></textarea>
-  <div class="stack" style="gap:8px"><button class="btn" type="submit">Send</button><button class="btn ghost" id="enough" type="button" ${turns<3?"hidden":""}>That's enough for now</button></div></form>
-  <p class="note" id="hint">${turns<3?"A few more answers and I'll have enough to build your plan.":"You can keep going, or move on whenever you're ready."}</p></div>`;
+  <div class="stack" style="gap:8px"><button class="btn" type="submit">Send</button></div></form>
+  <p class="note" id="hint"></p>
+  <button class="btn" id="enough" type="button" hidden>I'm done. Next: check my summary →</button></div>`;
   const chat=$("#chat");
   function bubble(who,text){ const d=document.createElement("div"); d.className="msg "+who; d.textContent=text; chat.append(d); chat.scrollTop=chat.scrollHeight; return d; }
+  function status(){
+    const left=Math.max(0,cap-turns);
+    $("#enough").hidden=turns<INTAKE.min;
+    $("#hint").textContent = turns<INTAKE.min ? `Answered ${turns} of ${INTAKE.min}. ${INTAKE.min-turns} more and I'll have enough to build your plan.`
+      : left ? `I have enough to move on. You can answer ${left} more to sharpen your plan, or move on now.` : "";
+  }
   log.forEach(m=>bubble(m.role==="assistant"?"them":"me",m.content));
+  status();
   const guide=`${BRAIN}
 
-YOU ARE NOW IN THE INTAKE CONVERSATION. Your only job is to get to know this candidate deeply. Do not give advice yet.
-- Ask ONE open question at a time, under 45 words. Start with one short line that shows you listened, then the question.
-- Dig into specifics: what exactly they sell (for insurance: which lines; for real estate: commercial or residential, rent or sale; for retail: which products), B2B or B2C, who the buyer is, how leads come in, how long a sale takes, deal sizes.
-- Ask about targets: the targets they were given and the ones they set for themselves, which they hit and which they missed, and why. Ask for real numbers, rankings, years.
-- Ask why high-tech sales and why now, which role they aim for, and what has been hard or frustrating in their search so far.
-- Let them talk. If an answer is short, ask for an example or a story. Never invent anything about them.`;
+YOU ARE NOW IN THE INTAKE CONVERSATION. Your only job is to get to know this candidate. Do not give advice yet.
+- The intake has ${INTAKE.min} to ${INTAKE.max} questions in total. Next is question {N}.
+- Start with one short line that shows you listened. Then one sentence, under 15 words, on how this answer will help them later (their CV, their deal stories or their interviews). Then write "Question {N}:" and ask ONE open question. Whole message under 70 words.
+- Cover, in an order that fits the conversation: what exactly they sell and to whom (B2B or B2C, the buyer, how leads come in, sales cycle, deal size); their targets with real numbers, which they hit and missed and why; rankings, awards or years; why high-tech sales and why now; the role they aim for; what has been hard in their search so far.
+- If an answer is short, ask for one example or story instead of moving on. Never invent anything about them.`;
   async function turn(){
     busy=true; const b=bubble("them","…");
     try{
-      const msgs=[{role:"user",content:guide+"\n\nThe conversation so far follows. Reply with your next message only."}].concat(log.map(m=>({role:m.role==="assistant"?"assistant":"user",content:m.content})));
+      const g=guide.replaceAll("{N}",String(turns+1));
+      const msgs=[{role:"user",content:g+"\n\nThe conversation so far follows. Reply with your next message only."}].concat(log.map(m=>({role:m.role==="assistant"?"assistant":"user",content:m.content})));
       const r=await sample(msgs,{cache:false,modelTier:"default",onText:({text})=>{ b.textContent=text; chat.scrollTop=chat.scrollHeight; }});
       b.textContent=r.text; log.push({role:"assistant",content:r.text});
       await save("profile",Object.assign({},S.profile||{},{intake:log}));
-    }catch(e){ b.textContent=aiError(e); b.classList.add("err"); }
+    }catch(e){
+      b.textContent=aiError(e); b.classList.add("err");
+      const t=document.createElement("button"); t.type="button"; t.className="btn ghost"; t.textContent="Try again"; t.style.marginTop="8px";
+      t.className+=" retry"; t.onclick=()=>{ if(busy) return; b.remove(); t.remove(); turn(); }; chat.append(t);
+    }
     busy=false;
   }
-  $("#say").addEventListener("submit",e=>{
+  $("#say").addEventListener("submit",async e=>{
     e.preventDefault(); if(busy) return;
     const t=$("#ans").value.trim(); if(!t) return;
-    $("#ans").value=""; bubble("me",t); log.push({role:"user",content:t}); turns++;
-    if(turns>=3){ $("#enough").hidden=false; $("#hint").textContent="You can keep going, or move on whenever you're ready."; }
+    busy=true; chat.querySelectorAll(".retry").forEach(x=>x.remove());
+    $("#ans").value=""; bubble("me",t); log.push({role:"user",content:t}); turns++; status();
+    await save("profile",Object.assign({},S.profile||{},{intake:log}));
+    if(turns>=cap) return wrapProfile(log);
+    busy=false;
     if(!sample){ bubble("them","The agent is not available right now. Reload the page and try again."); return; }
     turn();
   });
-  $("#enough").onclick=()=>{ if(!busy) wrapProfile(log); };
+  $("#enough").onclick=()=>{ if(busy) return; busy=true; wrapProfile(log); };
+  // A log that ends with the candidate's answer (after "Tell you more", or a reply that failed before a reload) needs the agent's next question.
+  if(log[log.length-1].role==="user" && sample) turn();
 }
 
 async function wrapProfile(log){
@@ -331,7 +353,7 @@ Return JSON only: {"sell":"what they sell and to whom, one line","sector":"","se
     <label class="f"><span>Coaching rhythm</span><select id="p_rhythm"><option>Daily: one small task a day</option><option>Weekly: a task pack once a week</option></select><small>You can switch anytime.</small></label>
     <div class="row"><button class="btn" type="submit">Looks right. Next: your CV →</button><button class="btn ghost" type="button" id="more">Tell you more</button></div>
   </form>`;
-  $("#more").onclick=()=>onboardProfile();
+  $("#more").onclick=()=>onboardProfile(true);
   $("#pf").addEventListener("submit",async e=>{
     e.preventDefault();
     await save("profile",Object.assign({},S.profile||{},r,{intake:log,target:$("#p_target").value,english:$("#p_english").value,rhythm:$("#p_rhythm").value.startsWith("Daily")?"daily":"weekly",created:(S.profile&&S.profile.created)||Date.now(),done:true}));
